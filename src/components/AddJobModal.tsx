@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Job, JobInput, JobStatus } from '../lib/types';
 import StarRating from './StarRating';
 
@@ -9,23 +9,32 @@ interface AddJobModalProps {
   initialData?: Job;
 }
 
+const getDefaultFormData = (initialData?: Job): JobInput => ({
+  position: initialData?.position || '',
+  company: initialData?.company || '',
+  location: initialData?.location || '',
+  minSalary: initialData?.minSalary || null,
+  maxSalary: initialData?.maxSalary || null,
+  status: initialData?.status || 'Bookmarked',
+  dateSaved: initialData?.dateSaved?.split('T')[0] || new Date().toISOString().split('T')[0],
+  deadline: initialData?.deadline?.split('T')[0] || null,
+  dateApplied: initialData?.dateApplied?.split('T')[0] || null,
+  followUp: initialData?.followUp?.split('T')[0] || null,
+  excitement: initialData?.excitement || 3,
+  jobDescription: initialData?.jobDescription || '',
+  link: initialData?.link || '',
+  notes: initialData?.notes || '',
+});
+
 export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: AddJobModalProps) {
-  const [formData, setFormData] = useState<JobInput>({
-    position: initialData?.position || '',
-    company: initialData?.company || '',
-    location: initialData?.location || '',
-    minSalary: initialData?.minSalary || null,
-    maxSalary: initialData?.maxSalary || null,
-    status: initialData?.status || 'Bookmarked',
-    dateSaved: initialData?.dateSaved?.split('T')[0] || new Date().toISOString().split('T')[0],
-    deadline: initialData?.deadline?.split('T')[0] || null,
-    dateApplied: initialData?.dateApplied?.split('T')[0] || null,
-    followUp: initialData?.followUp?.split('T')[0] || null,
-    excitement: initialData?.excitement || 3,
-    jobDescription: initialData?.jobDescription || '',
-    link: initialData?.link || '',
-    notes: initialData?.notes || '',
-  });
+  const [formData, setFormData] = useState<JobInput>(getDefaultFormData(initialData));
+
+  // Reset form when modal opens or initialData changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(getDefaultFormData(initialData));
+    }
+  }, [isOpen, initialData]);
 
   if (!isOpen) return null;
 
