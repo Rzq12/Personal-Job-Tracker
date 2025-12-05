@@ -459,7 +459,7 @@ export default function JobTracker() {
                         <tr
                           key={job.id}
                           className={`hover:bg-gray-50 cursor-pointer ${selectedJob?.id === job.id ? 'bg-teal-50' : ''}`}
-                          onClick={() => setSelectedJob(job)}
+                          onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
                         >
                           {visibleColumns.map((col) => (
                             <td key={col.key} className="px-4 py-3 text-sm">
