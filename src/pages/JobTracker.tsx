@@ -261,7 +261,9 @@ export default function JobTracker() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col ${selectedJob ? 'mr-96' : ''}`}>
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
+      >
         {/* Pipeline Status Bar */}
         <div className="p-6 pb-0">
           <PipelineStatusBar
