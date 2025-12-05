@@ -81,10 +81,19 @@ export default function JobTracker() {
 
   // Mutations
   const createMutation = useMutation({
-    mutationFn: api.createJob,
-    onSuccess: () => {
+    mutationFn: async (data: JobInput) => {
+      console.log('Creating job with data:', data);
+      return api.createJob(data);
+    },
+    onSuccess: (result) => {
+      console.log('Create job success:', result);
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setIsAddModalOpen(false);
+      setEditingJob(null);
+    },
+    onError: (error) => {
+      console.error('Create job failed:', error);
+      alert('Gagal menambahkan job. Silakan coba lagi.');
     },
   });
 
@@ -98,11 +107,20 @@ export default function JobTracker() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: api.deleteJob,
+    mutationFn: async (id: number) => {
+      console.log('Deleting job with ID:', id);
+      return api.deleteJob(id);
+    },
     onSuccess: () => {
+      console.log('Delete successful');
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setDeletingJob(null);
       setSelectedJob(null);
+    },
+    onError: (error) => {
+      console.error('Delete failed:', error);
+      alert('Gagal menghapus job. Silakan coba lagi.');
+      setDeletingJob(null);
     },
   });
 
@@ -245,7 +263,7 @@ export default function JobTracker() {
                     {group} ({groupJobs.length})
                   </h3>
                 )}
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto overflow-y-visible">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">

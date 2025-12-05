@@ -48,7 +48,10 @@ export default function ColumnsDropdown({ columns, onChange }: ColumnsDropdownPr
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+        <div className="absolute right-0 z-50 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2 max-h-80 overflow-y-auto">
+          <div className="px-3 py-2 border-b border-gray-100">
+            <span className="text-xs font-semibold text-gray-500 uppercase">Toggle Columns</span>
+          </div>
           {toggleableColumns.map((col) => (
             <label
               key={col.key}

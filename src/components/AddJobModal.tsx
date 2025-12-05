@@ -31,8 +31,9 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form data:', formData);
     onSubmit(formData);
-    onClose();
+    // Don't close here - let the parent handle it after successful mutation
   };
 
   const statuses: JobStatus[] = [

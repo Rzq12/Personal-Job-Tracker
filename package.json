@@ -19,7 +19,7 @@
     "vercel-build": "prisma generate && tsc -b && vite build"
   },
   "dependencies": {
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.19.0",
     "@tanstack/react-query": "^5.80.7",
     "@vercel/node": "^5.1.8",
     "cors": "^2.8.5",

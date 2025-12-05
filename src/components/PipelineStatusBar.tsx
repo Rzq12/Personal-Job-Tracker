@@ -12,43 +12,76 @@ export default function PipelineStatusBar({
   activeStatus,
 }: PipelineStatusBarProps) {
   return (
-    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div className="flex items-center">
       {PIPELINE_STATUSES.map((status, index) => {
         const count = counts[status] || 0;
         const isActive = activeStatus === status;
         const hasCount = count > 0;
+        const isFirst = index === 0;
+        const isLast = index === PIPELINE_STATUSES.length - 1;
 
         return (
           <button
             key={status}
             onClick={() => onStatusClick?.(status)}
-            className={`
-              relative flex-1 py-4 px-6 text-center transition-colors
-              ${isActive ? 'bg-teal-50' : 'hover:bg-gray-50'}
-              ${index !== PIPELINE_STATUSES.length - 1 ? 'border-r border-gray-200' : ''}
-            `}
+            className="relative flex-1 group"
+            style={{ marginLeft: isFirst ? 0 : -12 }}
           >
-            {/* Arrow decoration */}
-            {index !== PIPELINE_STATUSES.length - 1 && (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
-                <svg
-                  width="20"
-                  height="40"
-                  viewBox="0 0 20 40"
-                  fill="none"
-                  className="text-gray-200"
-                >
-                  <path d="M0 0L20 20L0 40" stroke="currentColor" strokeWidth="1" fill="white" />
-                </svg>
-              </div>
-            )}
-
-            <div
-              className={`text-2xl font-semibold ${hasCount ? 'text-teal-700' : 'text-gray-400'}`}
+            <svg
+              viewBox="0 0 200 60"
+              preserveAspectRatio="none"
+              className="w-full h-14"
             >
-              {hasCount ? count : '—'}
+              {/* Define clip path for arrow shape */}
+              <defs>
+                <clipPath id={`arrow-${index}`}>
+                  <path
+                    d={
+                      isFirst
+                        ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
+                        : isLast
+                        ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
+                        : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
+                    }
+                  />
+                </clipPath>
+              </defs>
+
+              {/* Background */}
+              <path
+                d={
+                  isFirst
+                    ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
+                    : isLast
+                    ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
+                    : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
+                }
+                className={`
+                  ${isActive ? 'fill-teal-500' : 'fill-white group-hover:fill-gray-50'}
+                  transition-colors
+                `}
+                stroke="#e5e7eb"
+                strokeWidth="1"
+              />
+            </svg>
+
+            {/* Text overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span
+                className={`text-lg font-bold ${
+                  isActive ? 'text-white' : hasCount ? 'text-teal-600' : 'text-gray-400'
+                }`}
+              >
+                {hasCount ? count : '—'}
+              </span>
+              <span
+                className={`text-[9px] uppercase tracking-wider font-medium ${
+                  isActive ? 'text-teal-100' : 'text-gray-500'
+                }`}
+              >
+                {status}
+              </span>
             </div>
-            <div className="text-xs text-gray-500 uppercase tracking-wide mt-1">{status}</div>
           </button>
         );
       })}
