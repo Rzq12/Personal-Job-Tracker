@@ -4,8 +4,6 @@ A modern, fullstack job application tracker built with React (Vite) and Vercel S
 
 🌐 **Live Demo**: [job-tracker.riezqidr.my.id](https://job-tracker.riezqidr.my.id)
 
-tes saja
-
 ## ✨ Features
 
 ### Pipeline View
