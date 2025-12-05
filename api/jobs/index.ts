@@ -44,11 +44,12 @@ async function getJobs(req: VercelRequest, res: VercelResponse) {
 
   const pageNum = parseInt(page, 10);
   const sizeNum = parseInt(size, 10);
-  const showArchived = archived === 'true';
+  // archived=true -> show only archived, archived=false -> show only non-archived
+  const archivedFilter = archived === 'true' ? true : false;
 
   // Demo mode
   if (isDemoMode()) {
-    let jobs = showArchived ? getAllDemoJobs() : getDemoJobs();
+    let jobs = getAllDemoJobs().filter((j) => j.archived === archivedFilter);
 
     // Filter
     if (search) {
@@ -108,9 +109,7 @@ async function getJobs(req: VercelRequest, res: VercelResponse) {
     where.status = status;
   }
 
-  if (!showArchived) {
-    where.archived = false;
-  }
+  where.archived = archivedFilter;
 
   // Sort
   const sortField = sort.startsWith('-') ? sort.slice(1) : sort;

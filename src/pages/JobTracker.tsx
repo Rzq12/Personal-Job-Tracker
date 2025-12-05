@@ -25,6 +25,8 @@ export default function JobTracker() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [deletingJob, setDeletingJob] = useState<Job | null>(null);
+  const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [sortField, setSortField] = useState<string>('dateSaved');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [pipelineFilter, setPipelineFilter] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function JobTracker() {
       api.getJobs({
         page: 1,
         size: 100,
-        archived: showArchived ? undefined : false,
+        archived: showArchived, // true = show archived, false = show non-archived
         sort: `${sortOrder === 'desc' ? '-' : ''}${sortField}`,
       }),
   });
@@ -172,6 +174,47 @@ export default function JobTracker() {
     }
   };
 
+  // Bulk action handlers
+  const handleBulkStatusChange = async (newStatus: string) => {
+    try {
+      await Promise.all(
+        selectedJobs.map((id) => api.updateJob(id, { status: newStatus as JobInput['status'] }))
+      );
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      setSelectedJobs([]);
+      setBulkStatusOpen(false);
+    } catch (error) {
+      console.error('Bulk status update failed:', error);
+      alert('Gagal mengubah status. Silakan coba lagi.');
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    try {
+      await Promise.all(selectedJobs.map((id) => api.updateJob(id, { archived: true })));
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      setSelectedJobs([]);
+    } catch (error) {
+      console.error('Bulk archive failed:', error);
+      alert('Gagal mengarsip. Silakan coba lagi.');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Apakah Anda yakin ingin menghapus ${selectedJobs.length} job?`)) return;
+    setBulkDeleting(true);
+    try {
+      await Promise.all(selectedJobs.map((id) => api.deleteJob(id)));
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      setSelectedJobs([]);
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      alert('Gagal menghapus. Silakan coba lagi.');
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -220,8 +263,97 @@ export default function JobTracker() {
         {/* Toolbar */}
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{selectedJobs.length} selected</span>
-            <GroupByDropdown value={groupBy} onChange={setGroupBy} />
+            {selectedJobs.length > 0 ? (
+              <>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg">
+                  <input
+                    type="checkbox"
+                    checked={true}
+                    onChange={() => setSelectedJobs([])}
+                    className="w-4 h-4 text-teal-600 border-gray-300 rounded"
+                  />
+                  <span className="text-sm font-medium text-teal-700">
+                    {selectedJobs.length} selected
+                  </span>
+                </div>
+
+                {/* Bulk Status Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setBulkStatusOpen(!bulkStatusOpen)}
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Status
+                  </button>
+                  {bulkStatusOpen && (
+                    <div className="absolute left-0 z-50 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+                      {[
+                        'Bookmarked',
+                        'Applying',
+                        'Applied',
+                        'Interviewing',
+                        'Negotiating',
+                        'Accepted',
+                        'I Withdrew',
+                        'Not Selected',
+                        'No Response',
+                      ].map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => handleBulkStatusChange(status)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bulk Archive Button */}
+                <button
+                  onClick={handleBulkArchive}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                    />
+                  </svg>
+                  Archive
+                </button>
+
+                {/* Bulk Delete Button */}
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={bulkDeleting}
+                  className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Delete
+                </button>
+              </>
+            ) : (
+              <GroupByDropdown value={groupBy} onChange={setGroupBy} />
+            )}
           </div>
 
           <div className="flex items-center gap-2">
