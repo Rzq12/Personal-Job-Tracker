@@ -207,8 +207,11 @@ html {
 }
 
 /* Focus ring */
-.focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2;
+.focus-ring:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #14b8a6;
 }
 
 /* Table row hover */
