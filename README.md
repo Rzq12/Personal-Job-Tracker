@@ -2,7 +2,7 @@
 
 A modern, fullstack job application tracker built with React (Vite) and Vercel Serverless Functions. Track your job applications with a beautiful UI inspired by Teal HQ.
 
-🌐 **Live Demo**: [job-tracker-coukv0pik-rzq12s-projects.vercel.app](https://job-tracker-coukv0pik-rzq12s-projects.vercel.app)
+🌐 **Live Demo**: [job-tracker.riezqidr.my.id](https://job-tracker.riezqidr.my.id)
 
 ## ✨ Features
 
