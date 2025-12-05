@@ -200,6 +200,17 @@ export default function JobTracker() {
     }
   };
 
+  const handleBulkUnarchive = async () => {
+    try {
+      await Promise.all(selectedJobs.map((id) => api.updateJob(id, { archived: false })));
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      setSelectedJobs([]);
+    } catch (error) {
+      console.error('Bulk unarchive failed:', error);
+      alert('Gagal mengembalikan dari arsip. Silakan coba lagi.');
+    }
+  };
+
   const handleBulkDelete = async () => {
     if (!confirm(`Apakah Anda yakin ingin menghapus ${selectedJobs.length} job?`)) return;
     setBulkDeleting(true);
@@ -318,9 +329,9 @@ export default function JobTracker() {
                   )}
                 </div>
 
-                {/* Bulk Archive Button */}
+                {/* Bulk Archive/Unarchive Button */}
                 <button
-                  onClick={handleBulkArchive}
+                  onClick={showArchived ? handleBulkUnarchive : handleBulkArchive}
                   className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,7 +342,7 @@ export default function JobTracker() {
                       d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
                     />
                   </svg>
-                  Archive
+                  {showArchived ? 'Unarchive' : 'Archive'}
                 </button>
 
                 {/* Bulk Delete Button */}
