@@ -17,6 +17,18 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
+  // Editable fields
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState({
+    position: job.position,
+    company: job.company,
+    location: job.location || '',
+    link: job.link || '',
+    minSalary: job.minSalary?.toString() || '',
+    maxSalary: job.maxSalary?.toString() || '',
+    jobDescription: job.jobDescription || '',
+  });
+
   // Animate in on mount
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -24,16 +36,154 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
     });
   }, []);
 
-  // Update notes when job changes
+  // Update notes and edit values when job changes
   useEffect(() => {
     setNotes(job.notes || '');
-  }, [job.id, job.notes]);
+    setEditValues({
+      position: job.position,
+      company: job.company,
+      location: job.location || '',
+      link: job.link || '',
+      minSalary: job.minSalary?.toString() || '',
+      maxSalary: job.maxSalary?.toString() || '',
+      jobDescription: job.jobDescription || '',
+    });
+  }, [
+    job.id,
+    job.notes,
+    job.position,
+    job.company,
+    job.location,
+    job.link,
+    job.minSalary,
+    job.maxSalary,
+    job.jobDescription,
+  ]);
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       onClose();
     }, 300);
+  };
+
+  const handleFieldSave = (field: string) => {
+    const value = editValues[field as keyof typeof editValues];
+    if (field === 'minSalary' || field === 'maxSalary') {
+      onUpdate({ [field]: value ? parseInt(value) : null });
+    } else {
+      onUpdate({ [field]: value || null });
+    }
+    setEditingField(null);
+  };
+
+  const handleFieldCancel = (field: string) => {
+    // Reset to original value
+    setEditValues((prev) => ({
+      ...prev,
+      [field]:
+        field === 'minSalary'
+          ? job.minSalary?.toString() || ''
+          : field === 'maxSalary'
+            ? job.maxSalary?.toString() || ''
+            : (job[field as keyof Job] as string) || '',
+    }));
+    setEditingField(null);
+  };
+
+  const EditableField = ({
+    field,
+    displayValue,
+    placeholder,
+    type = 'text',
+    multiline = false,
+  }: {
+    field: string;
+    displayValue: string;
+    placeholder: string;
+    type?: string;
+    multiline?: boolean;
+  }) => {
+    const isEditing = editingField === field;
+
+    if (isEditing) {
+      return (
+        <div className="flex items-center gap-2">
+          {multiline ? (
+            <textarea
+              value={editValues[field as keyof typeof editValues]}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, [field]: e.target.value }))}
+              placeholder={placeholder}
+              className="flex-1 px-2 py-1 text-sm border border-teal-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+              rows={4}
+              autoFocus
+            />
+          ) : (
+            <input
+              type={type}
+              value={editValues[field as keyof typeof editValues]}
+              onChange={(e) => setEditValues((prev) => ({ ...prev, [field]: e.target.value }))}
+              placeholder={placeholder}
+              className="flex-1 px-2 py-1 text-sm border border-teal-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleFieldSave(field);
+                if (e.key === 'Escape') handleFieldCancel(field);
+              }}
+            />
+          )}
+          <button
+            onClick={() => handleFieldSave(field)}
+            className="p-1 text-teal-600 hover:bg-teal-50 rounded"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={() => handleFieldCancel(field)}
+            className="p-1 text-gray-400 hover:bg-gray-100 rounded"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <span
+        onClick={() => setEditingField(field)}
+        className="cursor-pointer hover:bg-gray-100 px-1 -mx-1 rounded transition-colors inline-flex items-center gap-1 group"
+        title="Click to edit"
+      >
+        {displayValue || <span className="text-gray-400 italic">{placeholder}</span>}
+        <svg
+          className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+      </span>
+    );
   };
 
   const tabs = [
@@ -77,9 +227,25 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
         <div className="p-4 border-b border-gray-200">
           <div className="flex justify-between items-start">
             <div className="flex-1 animate-fade-in">
-              <h2 className="text-xl font-semibold text-gray-900">{job.position}</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                <EditableField
+                  field="position"
+                  displayValue={job.position}
+                  placeholder="Job Position"
+                />
+              </h2>
               <p className="text-gray-600">
-                {job.company} — {job.location || 'Remote'}
+                <EditableField
+                  field="company"
+                  displayValue={job.company}
+                  placeholder="Company Name"
+                />{' '}
+                —{' '}
+                <EditableField
+                  field="location"
+                  displayValue={job.location || 'Remote'}
+                  placeholder="Location"
+                />
               </p>
               <p className="text-sm text-gray-400 mt-1">Saved {formatDate(job.dateSaved)}</p>
             </div>
@@ -204,53 +370,212 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
 
                 <section className="animate-fade-in" style={{ animationDelay: '50ms' }}>
                   <h3 className="text-sm font-medium text-gray-500 mb-2">Salary</h3>
+                  <div className="text-sm bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                    <span className="text-gray-500">$</span>
+                    <EditableField
+                      field="minSalary"
+                      displayValue={job.minSalary?.toLocaleString() || ''}
+                      placeholder="Min"
+                      type="number"
+                    />
+                    <span className="text-gray-400">-</span>
+                    <span className="text-gray-500">$</span>
+                    <EditableField
+                      field="maxSalary"
+                      displayValue={job.maxSalary?.toLocaleString() || ''}
+                      placeholder="Max"
+                      type="number"
+                    />
+                  </div>
+                </section>
+
+                <section className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Job Link</h3>
                   <div className="text-sm bg-gray-50 rounded-lg p-3">
-                    {job.minSalary || job.maxSalary ? (
-                      <span className="font-medium text-green-600">
-                        ${job.minSalary?.toLocaleString() || '?'} - $
-                        {job.maxSalary?.toLocaleString() || '?'}
-                      </span>
+                    {editingField === 'link' ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="url"
+                          value={editValues.link}
+                          onChange={(e) =>
+                            setEditValues((prev) => ({ ...prev, link: e.target.value }))
+                          }
+                          placeholder="https://..."
+                          className="flex-1 px-2 py-1 text-sm border border-teal-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleFieldSave('link');
+                            if (e.key === 'Escape') handleFieldCancel('link');
+                          }}
+                        />
+                        <button
+                          onClick={() => handleFieldSave('link')}
+                          className="p-1 text-teal-600 hover:bg-teal-50 rounded"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleFieldCancel('link')}
+                          className="p-1 text-gray-400 hover:bg-gray-100 rounded"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : job.link ? (
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={job.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-teal-600 hover:text-teal-700 hover:underline break-all flex items-center gap-1 flex-1"
+                        >
+                          <svg
+                            className="w-4 h-4 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            />
+                          </svg>
+                          <span className="truncate">{job.link}</span>
+                        </a>
+                        <button
+                          onClick={() => setEditingField('link')}
+                          className="p-1 text-gray-400 hover:bg-gray-100 rounded"
+                          title="Edit link"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
                     ) : (
-                      <span className="text-gray-400">Not specified</span>
+                      <span
+                        onClick={() => setEditingField('link')}
+                        className="text-gray-400 cursor-pointer hover:text-gray-600 flex items-center gap-1"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add job link
+                      </span>
                     )}
                   </div>
                 </section>
 
-                {job.link && (
-                  <section className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Job Link</h3>
-                    <a
-                      href={job.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-teal-600 hover:text-teal-700 hover:underline break-all flex items-center gap-1 bg-gray-50 rounded-lg p-3 transition-colors"
-                    >
-                      <svg
-                        className="w-4 h-4 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Job Description</h3>
+                  <div className="text-sm bg-gray-50 rounded-lg p-3">
+                    {editingField === 'jobDescription' ? (
+                      <div className="space-y-2">
+                        <textarea
+                          value={editValues.jobDescription}
+                          onChange={(e) =>
+                            setEditValues((prev) => ({ ...prev, jobDescription: e.target.value }))
+                          }
+                          placeholder="Paste the job description here..."
+                          className="w-full px-2 py-1 text-sm border border-teal-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                          rows={6}
+                          autoFocus
                         />
-                      </svg>
-                      {job.link}
-                    </a>
-                  </section>
-                )}
-
-                {job.jobDescription && (
-                  <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Job Description</h3>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-lg p-3">
-                      {job.jobDescription}
-                    </p>
-                  </section>
-                )}
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleFieldCancel('jobDescription')}
+                            className="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleFieldSave('jobDescription')}
+                            className="px-3 py-1 text-sm bg-teal-600 text-white rounded hover:bg-teal-700"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : job.jobDescription ? (
+                      <div
+                        onClick={() => setEditingField('jobDescription')}
+                        className="text-gray-700 whitespace-pre-wrap cursor-pointer hover:bg-gray-100 -m-2 p-2 rounded transition-colors group"
+                        title="Click to edit"
+                      >
+                        {job.jobDescription}
+                        <span className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 ml-2">
+                          (click to edit)
+                        </span>
+                      </div>
+                    ) : (
+                      <span
+                        onClick={() => setEditingField('jobDescription')}
+                        className="text-gray-400 cursor-pointer hover:text-gray-600 flex items-center gap-1"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add job description
+                      </span>
+                    )}
+                  </div>
+                </section>
 
                 {job.keywords && job.keywords.length > 0 && (
                   <section className="animate-fade-in" style={{ animationDelay: '200ms' }}>
