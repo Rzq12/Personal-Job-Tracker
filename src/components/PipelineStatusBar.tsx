@@ -7,13 +7,46 @@ interface PipelineStatusBarProps {
 }
 
 // Color mapping for each status
-const statusColors: Record<PipelineStatus, { bg: string; activeBg: string; text: string; border: string }> = {
-  Bookmarked: { bg: 'fill-slate-50', activeBg: 'fill-slate-500', text: 'text-slate-600', border: '#cbd5e1' },
-  Applying: { bg: 'fill-blue-50', activeBg: 'fill-blue-500', text: 'text-blue-600', border: '#93c5fd' },
-  Applied: { bg: 'fill-indigo-50', activeBg: 'fill-indigo-500', text: 'text-indigo-600', border: '#a5b4fc' },
-  Interviewing: { bg: 'fill-amber-50', activeBg: 'fill-amber-500', text: 'text-amber-600', border: '#fcd34d' },
-  Negotiating: { bg: 'fill-purple-50', activeBg: 'fill-purple-500', text: 'text-purple-600', border: '#c4b5fd' },
-  Accepted: { bg: 'fill-emerald-50', activeBg: 'fill-emerald-500', text: 'text-emerald-600', border: '#6ee7b7' },
+const statusColors: Record<
+  PipelineStatus,
+  { bg: string; activeBg: string; text: string; border: string }
+> = {
+  Bookmarked: {
+    bg: 'fill-slate-50',
+    activeBg: 'fill-slate-500',
+    text: 'text-slate-600',
+    border: '#cbd5e1',
+  },
+  Applying: {
+    bg: 'fill-blue-50',
+    activeBg: 'fill-blue-500',
+    text: 'text-blue-600',
+    border: '#93c5fd',
+  },
+  Applied: {
+    bg: 'fill-indigo-50',
+    activeBg: 'fill-indigo-500',
+    text: 'text-indigo-600',
+    border: '#a5b4fc',
+  },
+  Interviewing: {
+    bg: 'fill-amber-50',
+    activeBg: 'fill-amber-500',
+    text: 'text-amber-600',
+    border: '#fcd34d',
+  },
+  Negotiating: {
+    bg: 'fill-purple-50',
+    activeBg: 'fill-purple-500',
+    text: 'text-purple-600',
+    border: '#c4b5fd',
+  },
+  Accepted: {
+    bg: 'fill-emerald-50',
+    activeBg: 'fill-emerald-500',
+    text: 'text-emerald-600',
+    border: '#6ee7b7',
+  },
 };
 
 export default function PipelineStatusBar({
@@ -49,9 +82,9 @@ export default function PipelineStatusBar({
               className="relative flex-1 group focus:outline-none focus:z-10"
               style={{ marginLeft: isFirst ? 0 : -12 }}
             >
-              <svg 
-                viewBox="0 0 200 60" 
-                preserveAspectRatio="none" 
+              <svg
+                viewBox="0 0 200 60"
+                preserveAspectRatio="none"
                 className="w-full h-14 drop-shadow-sm transition-all duration-300 group-hover:drop-shadow-md group-hover:scale-[1.02] group-active:scale-[0.98]"
               >
                 {/* Background */}
@@ -76,10 +109,10 @@ export default function PipelineStatusBar({
               <div className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-105">
                 <span
                   className={`text-xl font-bold transition-all duration-300 ${
-                    isActive 
-                      ? 'text-white drop-shadow-sm' 
-                      : hasCount 
-                        ? colors.text 
+                    isActive
+                      ? 'text-white drop-shadow-sm'
+                      : hasCount
+                        ? colors.text
                         : 'text-gray-300'
                   } ${hasCount && !isActive ? 'group-hover:scale-110' : ''}`}
                 >
@@ -121,7 +154,12 @@ export default function PipelineStatusBar({
               className="ml-1 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </span>

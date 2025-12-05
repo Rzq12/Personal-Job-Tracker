@@ -186,7 +186,9 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Application Deadline</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Application Deadline
+                </label>
                 <input
                   type="date"
                   value={formData.deadline || ''}
@@ -209,7 +211,9 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Follow Up Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Follow Up Date
+                </label>
                 <input
                   type="date"
                   value={formData.followUp || ''}
@@ -231,7 +235,9 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
 
             {/* Job Link */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Posting URL</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Job Posting URL
+              </label>
               <input
                 type="url"
                 value={formData.link || ''}
@@ -243,7 +249,9 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
 
             {/* Job Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Job Description
+              </label>
               <textarea
                 value={formData.jobDescription || ''}
                 onChange={(e) => setFormData({ ...formData, jobDescription: e.target.value })}

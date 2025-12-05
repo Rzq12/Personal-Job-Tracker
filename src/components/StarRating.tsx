@@ -30,14 +30,11 @@ export default function StarRating({
   const displayRating = hoverRating || rating;
 
   return (
-    <div 
-      className="inline-flex gap-1"
-      onMouseLeave={() => !readonly && setHoverRating(0)}
-    >
+    <div className="inline-flex gap-1" onMouseLeave={() => !readonly && setHoverRating(0)}>
       {[1, 2, 3, 4, 5].map((star) => {
         const isActive = star <= displayRating;
         const isHovered = star <= hoverRating;
-        
+
         return (
           <button
             key={star}
@@ -59,11 +56,12 @@ export default function StarRating({
               className={`
                 ${sizes[size]} 
                 transition-all duration-200
-                ${isActive 
-                  ? isHovered 
-                    ? 'text-amber-400 drop-shadow-lg' 
-                    : 'text-amber-500' 
-                  : 'text-gray-300 hover:text-amber-200'
+                ${
+                  isActive
+                    ? isHovered
+                      ? 'text-amber-400 drop-shadow-lg'
+                      : 'text-amber-500'
+                    : 'text-gray-300 hover:text-amber-200'
                 }
               `}
               fill="currentColor"
@@ -74,22 +72,21 @@ export default function StarRating({
           </button>
         );
       })}
-      
+
       {/* Rating label - only show on larger sizes */}
       {size === 'lg' && !readonly && (
         <span className="ml-2 text-sm text-gray-500 self-center min-w-[4rem]">
-          {displayRating === 0 
-            ? '' 
-            : displayRating === 1 
-              ? 'Not excited' 
-              : displayRating === 2 
-                ? 'A bit' 
-                : displayRating === 3 
-                  ? 'Interested' 
-                  : displayRating === 4 
-                    ? 'Excited!' 
-                    : '🔥 Dream job!'
-          }
+          {displayRating === 0
+            ? ''
+            : displayRating === 1
+              ? 'Not excited'
+              : displayRating === 2
+                ? 'A bit'
+                : displayRating === 3
+                  ? 'Interested'
+                  : displayRating === 4
+                    ? 'Excited!'
+                    : '🔥 Dream job!'}
         </span>
       )}
     </div>
