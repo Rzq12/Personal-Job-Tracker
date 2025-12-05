@@ -1,85 +1,87 @@
 # Job Tracker
 
-A fullstack job application tracker built with React (Vite) and Node.js/Express serverless functions, deployable to Vercel.
+A modern, fullstack job application tracker built with React (Vite) and Vercel Serverless Functions. Track your job applications with a beautiful UI inspired by Teal HQ.
 
-## Features
+🌐 **Live Demo**: [job-tracker-coukv0pik-rzq12s-projects.vercel.app](https://job-tracker-coukv0pik-rzq12s-projects.vercel.app)
 
-### Dashboard
+## ✨ Features
 
-- **Metric Cards**: Total Applied, Interview, Rejected, Accepted
-- **Monthly Chart**: Bar chart showing applications per month
-- **Status Distribution**: Progress bars for each status
-- **Work Type Breakdown**: WFO, Hybrid, Remote statistics
+### Pipeline View
 
-### Job Applications Table
+- **Visual Pipeline**: Track jobs through stages (Bookmarked → Applying → Applied → Interviewing → Negotiating → Accepted)
+- **Status Bar**: Real-time count of jobs in each pipeline stage
+- **Quick Status Updates**: Change job status directly from dropdown
 
-- **Sortable columns**: Date, Company, Position, Work Type, Status
-- **Pagination**: Customizable page size (5, 10, 20, 50)
-- **Search**: Multi-field search (company + position)
-- **Filters**: Status and Work Type filters
-- **Row actions**: Edit, Delete, Open Link
-- **Colored badges**: Visual status and work type indicators
+### Job Management
 
-### CRUD Operations
+- **Add/Edit Jobs**: Comprehensive form with position, company, salary range, dates, and notes
+- **Job Detail Panel**: Side panel with full job information
+- **Excitement Rating**: 5-star rating system for job interest level
+- **Bulk Actions**: Select multiple jobs for batch operations
 
-- **Create/Edit Modal**: Form with validation
-- **Delete Confirmation**: Safe deletion with confirmation dialog
-- **Real-time updates**: React Query for cache invalidation
+### Table Features
 
-### Export to Excel
+- **Sortable Columns**: Sort by any column (Date, Company, Position, Status, etc.)
+- **Search**: Real-time search across company and position
+- **Column Visibility**: Show/hide columns with dropdown toggle
+- **Row Selection**: Checkbox selection with select all option
+- **Click to View**: Click any row to see job details
 
-- **Server-side generation**: Using exceljs
-- **Filtered export**: Export current filtered results
-- **Styled output**: Colored cells for status and work type
+### Modern UI/UX
 
-## Tech Stack
+- **Smooth Animations**: Modal open/close animations with fade and scale effects
+- **Responsive Design**: Works on desktop and mobile
+- **Clean Interface**: Minimalist design with teal accent color
+- **Date Format**: DD/MM/YY format for easy reading
 
-| Category         | Technology                        |
-| ---------------- | --------------------------------- |
-| Frontend         | React 19, Vite, TypeScript        |
-| Styling          | Tailwind CSS v4                   |
-| State Management | React Query (TanStack Query)      |
-| Backend          | Node.js, Express-style handlers   |
-| Database         | PostgreSQL (Supabase recommended) |
-| ORM              | Prisma                            |
-| Excel Export     | exceljs                           |
-| Deployment       | Vercel (Serverless Functions)     |
+## 🛠 Tech Stack
 
-## Project Structure
+| Category         | Technology                  |
+| ---------------- | --------------------------- |
+| Frontend         | React 19, Vite, TypeScript  |
+| Styling          | Tailwind CSS v4             |
+| State Management | TanStack React Query v5     |
+| Backend          | Vercel Serverless Functions |
+| Database         | Prisma Postgres (Vercel)    |
+| ORM              | Prisma                      |
+| Deployment       | Vercel                      |
+
+## 📁 Project Structure
 
 ```
 my-job-tracker/
-├── api/                    # Serverless functions (Vercel)
+├── api/                        # Vercel Serverless Functions
 │   ├── jobs/
-│   │   ├── index.ts        # GET (list) / POST (create)
-│   │   ├── [id].ts         # GET / PUT / DELETE by ID
-│   │   └── export.ts       # GET export Excel
-│   ├── stats.ts            # GET dashboard stats
-│   └── lib/
-│       ├── prisma.ts       # Prisma client singleton
-│       └── types.ts        # Shared TypeScript types
+│   │   ├── index.ts            # GET (list) / POST (create)
+│   │   ├── [id].ts             # GET / PUT / DELETE by ID
+│   │   └── export.ts           # GET export Excel
+│   ├── stats.ts                # GET dashboard stats
+│   ├── lib/
+│   │   ├── prisma.ts           # Prisma client singleton
+│   │   └── types.ts            # Shared TypeScript types
+│   └── package.json            # API dependencies
 ├── prisma/
-│   ├── schema.prisma       # Database schema
-│   └── seed.ts             # Sample data seeder
+│   └── schema.prisma           # Database schema
 ├── src/
 │   ├── components/
-│   │   ├── ChartMonthly.tsx
-│   │   ├── DashboardCards.tsx
+│   │   ├── AddJobModal.tsx     # Add/Edit job modal with animations
+│   │   ├── ColumnsDropdown.tsx # Column visibility toggle
 │   │   ├── DeleteConfirmModal.tsx
-│   │   ├── JobForm.tsx
-│   │   ├── JobTable.tsx
-│   │   ├── StatusBreakdown.tsx
-│   │   └── WorkTypeBreakdown.tsx
+│   │   ├── GroupByDropdown.tsx # Group jobs by status
+│   │   ├── JobDetailPanel.tsx  # Side panel for job details
+│   │   ├── MenuDropdown.tsx    # Actions menu
+│   │   ├── PipelineStatusBar.tsx # Visual pipeline stages
+│   │   ├── StarRating.tsx      # 5-star rating component
+│   │   └── StatusDropdown.tsx  # Status filter dropdown
 │   ├── lib/
-│   │   ├── api.ts          # API client
-│   │   ├── hooks.ts        # React Query hooks
-│   │   └── types.ts        # TypeScript types
+│   │   ├── api.ts              # API client functions
+│   │   ├── hooks.ts            # React Query hooks
+│   │   └── types.ts            # TypeScript types
 │   ├── pages/
-│   │   ├── Dashboard.tsx
-│   │   └── Jobs.tsx
+│   │   └── JobTracker.tsx      # Main job tracker page
 │   ├── App.tsx
 │   ├── main.tsx
-│   └── index.css
+│   └── index.css               # Global styles & animations
 ├── .env.example
 ├── package.json
 ├── vercel.json
@@ -87,21 +89,21 @@ my-job-tracker/
 └── README.md
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
 - npm or yarn
-- PostgreSQL database (or Supabase account)
+- PostgreSQL database (Vercel Postgres or Supabase)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone <your-repo-url>
-   cd my-job-tracker
+   git clone https://github.com/Rzq12/Personal-Job-Tracker.git
+   cd Personal-Job-Tracker/my-job-tracker
    ```
 
 2. **Install dependencies**
@@ -143,16 +145,17 @@ my-job-tracker/
 
    The app will be available at `http://localhost:5173`
 
-### Using Supabase
+## 📊 Job Status Flow
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Settings → Database → Connection string
-3. Copy the connection string and add it to `.env`:
-   ```env
-   DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
-   ```
+```
+Bookmarked → Applying → Applied → Interviewing → Negotiating → Accepted
+                                                              ↓
+                                        I Withdrew / Not Selected / No Response
+                                                              ↓
+                                                          Archived
+```
 
-## API Endpoints
+## 🔌 API Endpoints
 
 ### Jobs
 
@@ -173,116 +176,73 @@ my-job-tracker/
 
 ### Query Parameters for GET /api/jobs
 
-| Parameter  | Type   | Description                                               |
-| ---------- | ------ | --------------------------------------------------------- |
-| `page`     | number | Page number (default: 1)                                  |
-| `size`     | number | Items per page (default: 10)                              |
-| `search`   | string | Search by company or position                             |
-| `status`   | string | Filter by status (Waiting, Interview, Rejected, Accepted) |
-| `workType` | string | Filter by work type (WFO, Hybrid, Remote)                 |
-| `fromDate` | string | Filter from date (ISO format)                             |
-| `toDate`   | string | Filter to date (ISO format)                               |
-| `sort`     | string | Sort field (prefix `-` for descending)                    |
+| Parameter | Type   | Description                      |
+| --------- | ------ | -------------------------------- |
+| `page`    | number | Page number (default: 1)         |
+| `size`    | number | Items per page (default: 10)     |
+| `search`  | string | Search by company or position    |
+| `status`  | string | Filter by status                 |
+| `sort`    | string | Sort field (prefix `-` for desc) |
 
-### Example Requests
-
-```bash
-# Get jobs with pagination and search
-curl "http://localhost:5173/api/jobs?page=1&size=10&search=FIF&status=Waiting"
-
-# Create a new job
-curl -X POST "http://localhost:5173/api/jobs" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "appliedDate": "2025-01-15",
-    "company": "Tokopedia",
-    "position": "Software Engineer",
-    "workType": "Remote",
-    "status": "Waiting",
-    "progress": "Submitted",
-    "link": "https://tokopedia.com/careers",
-    "notes": "Applied via company website"
-  }'
-
-# Export filtered jobs to Excel
-curl -O "http://localhost:5173/api/jobs/export?status=Accepted"
-```
-
-## Database Schema
+## 📦 Database Schema
 
 ```prisma
 model Job {
-  id          Int      @id @default(autoincrement())
-  appliedDate DateTime
-  company     String
-  position    String
-  workType    String   // "WFO" | "Hybrid" | "Remote"
-  progress    String?  // "Submitted" | "Test Passed" | "Interview Scheduled" | "Final Round"
-  status      String   // "Waiting" | "Rejected" | "Accepted" | "Interview"
-  link        String?
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int       @id @default(autoincrement())
+  position       String
+  company        String
+  location       String?
+  minSalary      Int?
+  maxSalary      Int?
+  status         String    @default("Bookmarked")
+  dateSaved      DateTime  @default(now())
+  deadline       DateTime?
+  dateApplied    DateTime?
+  followUp       DateTime?
+  excitement     Int       @default(3)
+  jobDescription String?
+  keywords       String[]
+  link           String?
+  notes          String?
+  archived       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 ```
 
-## Deploy to Vercel
-
-### Option 1: Vercel CLI
-
-1. Install Vercel CLI
-
-   ```bash
-   npm i -g vercel
-   ```
-
-2. Login and deploy
-
-   ```bash
-   vercel login
-   vercel
-   ```
-
-3. Set environment variables in Vercel Dashboard
-   - `DATABASE_URL`: Your PostgreSQL connection string
-
-### Option 2: GitHub Integration
+## 🚢 Deploy to Vercel
 
 1. Push your code to GitHub
 2. Go to [vercel.com](https://vercel.com) → New Project
 3. Import your GitHub repository
 4. Add environment variables:
-   - `DATABASE_URL`
+   - `DATABASE_URL` - Your PostgreSQL connection string
 5. Deploy!
 
-### Important Notes
+### Using Vercel Postgres
 
-- Make sure `DATABASE_URL` is set in Vercel environment variables
-- Use Supabase or other cloud PostgreSQL providers for production
-- The `/api` folder will automatically become serverless functions
+1. In Vercel Dashboard, go to Storage → Create Database
+2. Select "Postgres" and create
+3. Copy the connection string to your environment variables
+4. Run migrations: `npx prisma migrate deploy`
 
-## Scripts
+## 📜 Scripts
 
-| Command                   | Description               |
-| ------------------------- | ------------------------- |
-| `npm run dev`             | Start development server  |
-| `npm run build`           | Build for production      |
-| `npm run preview`         | Preview production build  |
-| `npm run lint`            | Run ESLint                |
-| `npm run format`          | Format code with Prettier |
-| `npm run prisma:generate` | Generate Prisma client    |
-| `npm run prisma:migrate`  | Run database migrations   |
-| `npm run prisma:push`     | Push schema changes       |
-| `npm run prisma:seed`     | Seed sample data          |
-| `npm run prisma:studio`   | Open Prisma Studio        |
+| Command                   | Description              |
+| ------------------------- | ------------------------ |
+| `npm run dev`             | Start development server |
+| `npm run build`           | Build for production     |
+| `npm run preview`         | Preview production build |
+| `npm run lint`            | Run ESLint               |
+| `npm run prisma:generate` | Generate Prisma client   |
+| `npm run prisma:migrate`  | Run database migrations  |
+| `npm run prisma:push`     | Push schema changes      |
+| `npm run prisma:studio`   | Open Prisma Studio       |
 
-## Environment Variables
-
-| Variable       | Required | Description                                  |
-| -------------- | -------- | -------------------------------------------- |
-| `DATABASE_URL` | Yes      | PostgreSQL connection string                 |
-| `VITE_API_URL` | No       | API base URL (leave empty for relative path) |
-
-## License
+## 📄 License
 
 MIT
+
+---
+
+Made with ❤️ by [Rzq12](https://github.com/Rzq12)
