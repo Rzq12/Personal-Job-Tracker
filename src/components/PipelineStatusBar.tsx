@@ -27,11 +27,7 @@ export default function PipelineStatusBar({
             className="relative flex-1 group"
             style={{ marginLeft: isFirst ? 0 : -12 }}
           >
-            <svg
-              viewBox="0 0 200 60"
-              preserveAspectRatio="none"
-              className="w-full h-14"
-            >
+            <svg viewBox="0 0 200 60" preserveAspectRatio="none" className="w-full h-14">
               {/* Define clip path for arrow shape */}
               <defs>
                 <clipPath id={`arrow-${index}`}>
@@ -40,8 +36,8 @@ export default function PipelineStatusBar({
                       isFirst
                         ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
                         : isLast
-                        ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
-                        : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
+                          ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
+                          : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
                     }
                   />
                 </clipPath>
@@ -53,8 +49,8 @@ export default function PipelineStatusBar({
                   isFirst
                     ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
                     : isLast
-                    ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
-                    : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
+                      ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
+                      : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
                 }
                 className={`
                   ${isActive ? 'fill-teal-500' : 'fill-white group-hover:fill-gray-50'}

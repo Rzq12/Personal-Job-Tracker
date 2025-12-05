@@ -89,9 +89,7 @@ export default function StatusDropdown({ value, onChange }: StatusDropdownProps)
                   ${value === status ? 'bg-teal-50' : ''}
                 `}
               >
-                <span
-                  className={`w-3 h-3 rounded-full ${STATUS_COLORS[status].split(' ')[0]}`}
-                />
+                <span className={`w-3 h-3 rounded-full ${STATUS_COLORS[status].split(' ')[0]}`} />
                 {status}
                 {status === 'No Response' && <span className="ml-auto">👻</span>}
               </button>

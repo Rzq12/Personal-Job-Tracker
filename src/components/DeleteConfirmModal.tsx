@@ -17,10 +17,7 @@ export default function DeleteConfirmModal({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/50 transition-opacity"
-          onClick={onCancel}
-        />
+        <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onCancel} />
 
         {/* Modal */}
         <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md">
@@ -44,9 +41,7 @@ export default function DeleteConfirmModal({
 
             {/* Content */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Hapus Job Application?
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Hapus Job Application?</h3>
               <p className="text-sm text-gray-500 mb-4">
                 Apakah Anda yakin ingin menghapus aplikasi pekerjaan ini?
               </p>
@@ -54,9 +49,7 @@ export default function DeleteConfirmModal({
                 <p className="text-sm font-medium text-gray-900">{job.company}</p>
                 <p className="text-sm text-gray-600">{job.position}</p>
               </div>
-              <p className="text-xs text-gray-400">
-                Tindakan ini tidak dapat dibatalkan.
-              </p>
+              <p className="text-xs text-gray-400">Tindakan ini tidak dapat dibatalkan.</p>
             </div>
 
             {/* Actions */}
