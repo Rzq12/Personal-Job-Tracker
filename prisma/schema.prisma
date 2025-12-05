@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Job {
+  id            Int       @id @default(autoincrement())
+  position      String    // Job Position
+  company       String    // Company name
+  location      String?   // Location (e.g., "Anywhere, USA", "Remote")
+  minSalary     Int?      // Minimum salary
+  maxSalary     Int?      // Maximum salary
+  status        String    @default("Bookmarked") // Bookmarked, Applying, Applied, Interviewing, Negotiating, Accepted, I Withdrew, Not Selected, No Response, Archived
+  dateSaved     DateTime  @default(now()) // Date job was saved/bookmarked
+  deadline      DateTime? // Application deadline
+  dateApplied   DateTime? // Date application was submitted
+  followUp      DateTime? // Follow up date
+  excitement    Int       @default(3) // Star rating 1-5
+  jobDescription String?  // Full job description
+  keywords      String[]  // Keywords/skills for the job
+  link          String?   // Job posting URL
+  notes         String?   // Personal notes
+  archived      Boolean   @default(false) // Is job archived
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([company])
+  @@index([dateSaved])
+  @@index([archived])
+}
