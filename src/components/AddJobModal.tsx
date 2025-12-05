@@ -28,15 +28,33 @@ const getDefaultFormData = (initialData?: Job): JobInput => ({
 
 export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: AddJobModalProps) {
   const [formData, setFormData] = useState<JobInput>(getDefaultFormData(initialData));
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
 
-  // Reset form when modal opens or initialData changes
+  // Handle open/close animations
   useEffect(() => {
     if (isOpen) {
+      setShouldRender(true);
       setFormData(getDefaultFormData(initialData));
+      // Trigger animation after mount
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+      // Wait for animation to complete before unmounting
+      const timer = setTimeout(() => setShouldRender(false), 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, initialData]);
 
-  if (!isOpen) return null;
+  // Handle close with animation
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  if (!shouldRender) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +78,16 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${isVisible ? 'opacity-50' : 'opacity-0'}`}
+        onClick={handleClose}
+      />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div
+        className={`relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden 
+          transform transition-all duration-300 ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}
+      >
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -71,7 +95,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
               {initialData ? 'Edit Job' : 'Add a New Job'}
             </h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <svg
@@ -288,7 +312,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
         <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             Cancel
