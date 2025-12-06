@@ -186,7 +186,7 @@ async function handleMe(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const token = extractToken(req);
+  const token = extractToken(req.headers.authorization);
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -270,7 +270,7 @@ async function handleLogout(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const token = extractToken(req);
+  const token = extractToken(req.headers.authorization);
 
   if (!token) {
     return res.status(200).json({ message: 'Logged out' });
