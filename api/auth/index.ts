@@ -1,7 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma';
-import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken, extractToken } from '../lib/auth';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+  extractToken,
+} from '../lib/auth';
 
 /**
  * Unified Auth Handler - All auth endpoints in one function
