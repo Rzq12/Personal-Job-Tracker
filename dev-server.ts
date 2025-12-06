@@ -9,14 +9,18 @@ import jobsHandlerModule from './api/jobs/index';
 import jobIdHandlerModule from './api/jobs/[id]';
 import exportHandlerModule from './api/jobs/export';
 
+// Import unified auth handler
+import authHandlerModule from './api/auth/index';
+
 // Extract default export (handle both ESM and CommonJS)
 const statsHandler = (statsHandlerModule as any).default || statsHandlerModule;
 const jobsHandler = (jobsHandlerModule as any).default || jobsHandlerModule;
 const jobIdHandler = (jobIdHandlerModule as any).default || jobIdHandlerModule;
 const exportHandler = (exportHandlerModule as any).default || exportHandlerModule;
+const authHandler = (authHandlerModule as any).default || authHandlerModule;
 
 const app = express();
-const PORT = 3001;
+const PORT = 3002;
 
 app.use(cors());
 app.use(express.json());
@@ -31,6 +35,10 @@ const adaptHandler = (handler: Function) => {
 };
 
 // Routes
+// Auth routes (unified handler with query params)
+app.all('/api/auth', adaptHandler(authHandler));
+
+// Job routes
 app.all('/api/stats', adaptHandler(statsHandler));
 app.all('/api/jobs/export', adaptHandler(exportHandler));
 app.all('/api/jobs/:id', (req, res) => {
