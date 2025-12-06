@@ -206,35 +206,35 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
 
   return (
     <>
-      {/* Backdrop overlay */}
+      {/* Backdrop overlay - Only on mobile/tablet */}
       <div
-        className={`fixed inset-0 bg-black/20 z-40 transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 lg:hidden ${
           isVisible && !isClosing ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={handleClose}
       />
 
-      {/* Panel */}
+      {/* Panel - Full screen on mobile, side panel on desktop */}
       <div
         className={`
-          fixed right-0 top-0 h-full w-96 bg-white border-l border-gray-200 
-          flex flex-col z-50 shadow-2xl
+          fixed inset-0 lg:relative lg:w-96 lg:h-full bg-white lg:border-l border-gray-200 
+          flex flex-col z-50 lg:shadow-2xl
           transform transition-all duration-300 ease-out
-          ${isVisible && !isClosing ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
+          ${isVisible && !isClosing ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-full opacity-0'}
         `}
       >
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex justify-between items-start">
-            <div className="flex-1 animate-fade-in">
-              <h2 className="text-xl font-semibold text-gray-900">
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+          <div className="flex justify-between items-start gap-3">
+            <div className="flex-1 min-w-0 animate-fade-in">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 break-words">
                 <EditableField
                   field="position"
                   displayValue={job.position}
                   placeholder="Job Position"
                 />
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600 break-words">
                 <EditableField
                   field="company"
                   displayValue={job.company}
@@ -247,9 +247,11 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
                   placeholder="Location"
                 />
               </p>
-              <p className="text-sm text-gray-400 mt-1">Saved {formatDate(job.dateSaved)}</p>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                Saved {formatDate(job.dateSaved)}
+              </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <StarRating
                 rating={job.excitement}
                 onChange={(rating) => onUpdate({ excitement: rating })}
@@ -257,7 +259,7 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
               />
               <button
                 onClick={handleClose}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-all duration-200 hover:rotate-90"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-all duration-200 hover:rotate-90 touch-manipulation"
               >
                 <svg
                   className="w-5 h-5 text-gray-500"
@@ -276,55 +278,57 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
             </div>
           </div>
 
-          {/* Status Pipeline */}
-          <div className="mt-4 flex items-center gap-1 overflow-x-auto pb-2">
-            {['Bookmarked', 'Applying', 'Applied', 'Interviewing', 'Negotiating', 'Accepted'].map(
-              (status, index) => {
-                const isActive = job.status === status;
-                const isPast =
-                  [
-                    'Bookmarked',
-                    'Applying',
-                    'Applied',
-                    'Interviewing',
-                    'Negotiating',
-                    'Accepted',
-                  ].indexOf(job.status) >= index;
+          {/* Status Pipeline - Scrollable on mobile */}
+          <div className="mt-4 -mx-4 sm:mx-0 px-4 sm:px-0">
+            <div className="flex items-center gap-1 overflow-x-auto pb-2 scrollbar-hide">
+              {['Bookmarked', 'Applying', 'Applied', 'Interviewing', 'Negotiating', 'Accepted'].map(
+                (status, index) => {
+                  const isActive = job.status === status;
+                  const isPast =
+                    [
+                      'Bookmarked',
+                      'Applying',
+                      'Applied',
+                      'Interviewing',
+                      'Negotiating',
+                      'Accepted',
+                    ].indexOf(job.status) >= index;
 
-                return (
-                  <button
-                    key={status}
-                    onClick={() => onUpdate({ status: status as JobStatus })}
-                    className={`
-                    px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap 
-                    transition-all duration-200 transform hover:scale-105
+                  return (
+                    <button
+                      key={status}
+                      onClick={() => onUpdate({ status: status as JobStatus })}
+                      className={`
+                      px-2.5 sm:px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap 
+                      transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation
                     ${isActive ? 'bg-teal-600 text-white shadow-md' : isPast ? 'bg-teal-100 text-teal-700 hover:bg-teal-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}
                   `}
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    {status}
-                  </button>
-                );
-              }
-            )}
-            <button
-              onClick={handleClose}
-              className="px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full whitespace-nowrap transition-colors duration-200"
-            >
-              Close Job
-            </button>
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      {status}
+                    </button>
+                  );
+                }
+              )}
+              <button
+                onClick={handleClose}
+                className="px-2.5 sm:px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full whitespace-nowrap transition-colors duration-200 touch-manipulation"
+              >
+                Close Job
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 flex-shrink-0">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-              flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-1
-              transition-all duration-200 relative
+              flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium flex items-center justify-center gap-1
+              transition-all duration-200 relative touch-manipulation
               ${
                 activeTab === tab.id
                   ? 'text-teal-600'
@@ -333,7 +337,7 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
             `}
             >
               <span className="transition-transform duration-200 hover:scale-110">{tab.icon}</span>
-              {tab.label}
+              <span className="hidden xs:inline">{tab.label}</span>
               {activeTab === tab.id && (
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600 animate-scale-x" />
               )}
@@ -341,8 +345,8 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
           ))}
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        {/* Tab Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div key={activeTab} className="animate-fade-slide-in">
             {activeTab === 'info' && (
               <div className="space-y-4">
@@ -602,7 +606,7 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add your notes here..."
-                  className="w-full h-64 p-3 border border-gray-200 rounded-lg text-sm resize-none 
+                  className="w-full h-48 sm:h-64 p-3 border border-gray-200 rounded-lg text-sm resize-none 
                 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
                 transition-all duration-200"
                 />
@@ -610,7 +614,7 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
                   onClick={handleSaveNotes}
                   className="w-full py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium 
                 hover:bg-teal-700 active:scale-[0.98] transition-all duration-200 
-                shadow-md hover:shadow-lg"
+                shadow-md hover:shadow-lg touch-manipulation"
                 >
                   Save Notes
                 </button>
@@ -620,18 +624,18 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-200 flex gap-2">
+        <div className="p-4 sm:p-6 border-t border-gray-200 flex gap-2 sm:gap-3 flex-shrink-0">
           <button
             onClick={() => onUpdate({ archived: !job.archived })}
-            className="flex-1 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 
-          hover:bg-gray-50 active:scale-[0.98] transition-all duration-200"
+            className="flex-1 py-2.5 sm:py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 
+          hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 touch-manipulation"
           >
             {job.archived ? 'Unarchive' : 'Archive'}
           </button>
           <button
             onClick={onDelete}
-            className="flex-1 py-2.5 border border-red-300 rounded-lg text-sm font-medium text-red-600 
-          hover:bg-red-50 active:scale-[0.98] transition-all duration-200"
+            className="flex-1 py-2.5 sm:py-3 border border-red-300 rounded-lg text-sm font-medium text-red-600 
+          hover:bg-red-50 active:scale-[0.98] transition-all duration-200 touch-manipulation"
           >
             Delete
           </button>

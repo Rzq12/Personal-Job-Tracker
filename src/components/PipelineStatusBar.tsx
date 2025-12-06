@@ -57,91 +57,93 @@ export default function PipelineStatusBar({
   const totalCount = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-lg sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100">
       {/* Header with total count */}
-      <div className="flex items-center justify-end mb-3">
-        <span className="text-sm font-medium text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded-full">
+      <div className="flex items-center justify-end mb-2 sm:mb-3">
+        <span className="text-xs sm:text-sm font-medium text-gray-700 bg-gray-100 px-2 sm:px-2.5 py-0.5 rounded-full">
           {totalCount} total
         </span>
       </div>
 
-      {/* Pipeline arrows */}
-      <div className="flex items-center">
-        {PIPELINE_STATUSES.map((status, index) => {
-          const count = counts[status] || 0;
-          const isActive = activeStatus === status;
-          const hasCount = count > 0;
-          const isFirst = index === 0;
-          const isLast = index === PIPELINE_STATUSES.length - 1;
-          const colors = statusColors[status];
+      {/* Pipeline arrows - Horizontal scroll on mobile */}
+      <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0 pb-1">
+        <div className="flex items-center min-w-max sm:min-w-0">
+          {PIPELINE_STATUSES.map((status, index) => {
+            const count = counts[status] || 0;
+            const isActive = activeStatus === status;
+            const hasCount = count > 0;
+            const isFirst = index === 0;
+            const isLast = index === PIPELINE_STATUSES.length - 1;
+            const colors = statusColors[status];
 
-          return (
-            <button
-              key={status}
-              onClick={() => onStatusClick?.(status)}
-              className="relative flex-1 group focus:outline-none focus:z-10"
-              style={{ marginLeft: isFirst ? 0 : -12 }}
-            >
-              <svg
-                viewBox="0 0 200 60"
-                preserveAspectRatio="none"
-                className="w-full h-14 drop-shadow-sm transition-all duration-300 group-hover:drop-shadow-md group-hover:scale-[1.02] group-active:scale-[0.98]"
+            return (
+              <button
+                key={status}
+                onClick={() => onStatusClick?.(status)}
+                className="relative flex-1 min-w-[120px] sm:min-w-0 group focus:outline-none focus:z-10"
+                style={{ marginLeft: isFirst ? 0 : -12 }}
               >
-                {/* Background */}
-                <path
-                  d={
-                    isFirst
-                      ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
-                      : isLast
-                        ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
-                        : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
-                  }
-                  className={`
+                <svg
+                  viewBox="0 0 200 60"
+                  preserveAspectRatio="none"
+                  className="w-full h-12 sm:h-14 drop-shadow-sm transition-all duration-300 group-hover:drop-shadow-md group-hover:scale-[1.02] group-active:scale-[0.98]"
+                >
+                  {/* Background */}
+                  <path
+                    d={
+                      isFirst
+                        ? 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 Z'
+                        : isLast
+                          ? 'M 0 0 L 200 0 L 200 60 L 0 60 L 15 30 Z'
+                          : 'M 0 0 L 185 0 L 200 30 L 185 60 L 0 60 L 15 30 Z'
+                    }
+                    className={`
                     ${isActive ? colors.activeBg : `${colors.bg} group-hover:brightness-95`}
                     transition-all duration-300
                   `}
-                  stroke={isActive ? 'transparent' : colors.border}
-                  strokeWidth="1.5"
-                />
-              </svg>
+                    stroke={isActive ? 'transparent' : colors.border}
+                    strokeWidth="1.5"
+                  />
+                </svg>
 
-              {/* Text overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                <span
-                  className={`text-xl font-bold transition-all duration-300 ${
-                    isActive
-                      ? 'text-white drop-shadow-sm'
-                      : hasCount
-                        ? colors.text
-                        : 'text-gray-300'
-                  } ${hasCount && !isActive ? 'group-hover:scale-110' : ''}`}
-                >
-                  {count}
-                </span>
-                <span
-                  className={`text-[9px] uppercase tracking-wider font-semibold transition-colors duration-300 ${
-                    isActive ? 'text-white/90' : 'text-gray-500 group-hover:text-gray-700'
-                  }`}
-                >
-                  {status}
-                </span>
-              </div>
-
-              {/* Active indicator pulse */}
-              {isActive && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-2 h-2 bg-white rounded-full animate-ping opacity-75 absolute top-2 right-6" />
+                {/* Text overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                  <span
+                    className={`text-xl font-bold transition-all duration-300 ${
+                      isActive
+                        ? 'text-white drop-shadow-sm'
+                        : hasCount
+                          ? colors.text
+                          : 'text-gray-300'
+                    } ${hasCount && !isActive ? 'group-hover:scale-110' : ''}`}
+                  >
+                    {count}
+                  </span>
+                  <span
+                    className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-semibold transition-colors duration-300 ${
+                      isActive ? 'text-white/90' : 'text-gray-500 group-hover:text-gray-700'
+                    }`}
+                  >
+                    {status}
+                  </span>
                 </div>
-              )}
-            </button>
-          );
-        })}
+
+                {/* Active indicator pulse */}
+                {isActive && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-2 h-2 bg-white rounded-full animate-ping opacity-75 absolute top-2 right-6" />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Active filter indicator */}
       {activeStatus && (
-        <div className="mt-3 flex items-center justify-center">
-          <span className="text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+        <div className="mt-2 sm:mt-3 flex items-center justify-center">
+          <span className="text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 px-2.5 sm:px-3 py-1.5 rounded-full">
             <span>Filtering by</span>
             <span className={`font-semibold ${statusColors[activeStatus as PipelineStatus].text}`}>
               {activeStatus}
