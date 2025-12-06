@@ -271,13 +271,13 @@ export default function JobTracker() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header with Logout */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      {/* Header with Logout - Responsive */}
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-teal-600 rounded-lg flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-white"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -290,19 +290,19 @@ export default function JobTracker() {
                 />
               </svg>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Job Tracker</h1>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Job Tracker</h1>
+              <p className="text-xs sm:text-sm text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {isLoggingOut ? (
               <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24">
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -317,11 +317,16 @@ export default function JobTracker() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Logging out...
+                <span className="hidden xs:inline">Logging out...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-3 h-3 sm:w-4 sm:h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -329,7 +334,7 @@ export default function JobTracker() {
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                Logout
+                <span className="hidden xs:inline">Logout</span>
               </>
             )}
           </button>
@@ -337,12 +342,12 @@ export default function JobTracker() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex flex-col lg:flex-row">
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
         >
           {/* Pipeline Status Bar */}
-          <div className="p-6 pb-0">
+          <div className="p-3 sm:p-4 lg:p-6 pb-0">
             <PipelineStatusBar
               counts={pipelineCounts}
               onStatusClick={handlePipelineClick}
@@ -351,8 +356,8 @@ export default function JobTracker() {
           </div>
 
           {/* Toolbar */}
-          <div className="p-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="p-3 sm:p-4 lg:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap w-full sm:w-auto">
               {selectedJobs.length > 0 ? (
                 <>
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg">
@@ -451,7 +456,7 @@ export default function JobTracker() {
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-end">
               <ColumnsDropdown columns={columns} onChange={setColumns} />
               <MenuDropdown
                 onExportReport={handleExport}
@@ -461,7 +466,7 @@ export default function JobTracker() {
               />
               <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 flex items-center gap-2"
+                className="px-3 sm:px-4 py-2 bg-teal-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-teal-700 flex items-center gap-2 whitespace-nowrap"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -471,149 +476,178 @@ export default function JobTracker() {
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
-                Add a New Job
+                <span className="hidden xs:inline">Add a New Job</span>
+                <span className="xs:hidden">Add Job</span>
               </button>
             </div>
           </div>
 
-          {/* Table */}
-          <div className="flex-1 px-6 pb-6 overflow-auto">
+          {/* Table - Responsive with horizontal scroll on mobile */}
+          <div className="flex-1 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 overflow-auto">
             {isLoading ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
               </div>
             ) : (
               Object.entries(groupedJobs).map(([group, groupJobs]) => (
-                <div key={group} className="mb-6">
+                <div key={group} className="mb-4 sm:mb-6">
                   {groupBy === 'Status' && (
                     <h3 className="text-sm font-medium text-gray-500 mb-2 px-2">
                       {group} ({groupJobs.length})
                     </h3>
                   )}
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto overflow-y-visible">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                          {visibleColumns.map((col) => (
-                            <th
-                              key={col.key}
-                              className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
-                              style={{ width: col.width }}
-                              onClick={() =>
-                                col.sortable &&
-                                col.key !== 'select' &&
-                                handleSort(col.key as string)
-                              }
-                            >
-                              {col.key === 'select' ? (
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    selectedJobs.length === groupJobs.length && groupJobs.length > 0
-                                  }
-                                  onChange={(e) => handleSelectAll(e.target.checked)}
-                                  className="w-4 h-4 text-teal-600 border-gray-300 rounded"
-                                />
-                              ) : (
-                                <div className="flex items-center gap-1">
-                                  {col.label}
-                                  {sortField === col.key && (
-                                    <svg
-                                      className="w-4 h-4"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d={sortOrder === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'}
-                                      />
-                                    </svg>
-                                  )}
-                                </div>
-                              )}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {groupJobs.map((job) => (
-                          <tr
-                            key={job.id}
-                            className={`hover:bg-gray-50 cursor-pointer ${selectedJob?.id === job.id ? 'bg-teal-50' : ''}`}
-                            onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
-                          >
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[640px]">
+                        <thead>
+                          <tr className="bg-gray-50 border-b border-gray-200">
                             {visibleColumns.map((col) => (
-                              <td key={col.key} className="px-4 py-3 text-sm">
-                                {col.key === 'select' && (
+                              <th
+                                key={col.key}
+                                className={`px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                                style={{ width: col.width }}
+                                onClick={() =>
+                                  col.sortable &&
+                                  col.key !== 'select' &&
+                                  handleSort(col.key as string)
+                                }
+                              >
+                                {col.key === 'select' ? (
                                   <input
                                     type="checkbox"
-                                    checked={selectedJobs.includes(job.id)}
-                                    onChange={(e) => {
-                                      e.stopPropagation();
-                                      handleSelectJob(job.id, e.target.checked);
-                                    }}
-                                    onClick={(e) => e.stopPropagation()}
+                                    checked={
+                                      selectedJobs.length === groupJobs.length &&
+                                      groupJobs.length > 0
+                                    }
+                                    onChange={(e) => handleSelectAll(e.target.checked)}
                                     className="w-4 h-4 text-teal-600 border-gray-300 rounded"
                                   />
-                                )}
-                                {col.key === 'position' && (
-                                  <span className="font-medium text-gray-900">{job.position}</span>
-                                )}
-                                {col.key === 'company' && (
-                                  <span className="text-gray-700">{job.company}</span>
-                                )}
-                                {col.key === 'minSalary' && formatSalary(job.minSalary)}
-                                {col.key === 'maxSalary' && formatSalary(job.maxSalary)}
-                                {col.key === 'location' && (
-                                  <span className="text-gray-600">{job.location || 'N/A'}</span>
-                                )}
-                                {col.key === 'status' && (
-                                  <div onClick={(e) => e.stopPropagation()}>
-                                    <StatusDropdown
-                                      value={job.status}
-                                      onChange={(status) =>
-                                        updateMutation.mutate({ id: job.id, data: { status } })
-                                      }
-                                    />
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    {col.label}
+                                    {sortField === col.key && (
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d={
+                                            sortOrder === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'
+                                          }
+                                        />
+                                      </svg>
+                                    )}
                                   </div>
                                 )}
-                                {col.key === 'dateSaved' && formatDate(job.dateSaved)}
-                                {col.key === 'deadline' && formatDate(job.deadline)}
-                                {col.key === 'dateApplied' && formatDate(job.dateApplied)}
-                                {col.key === 'followUp' && formatDate(job.followUp)}
-                                {col.key === 'excitement' && (
-                                  <div onClick={(e) => e.stopPropagation()}>
-                                    <StarRating
-                                      rating={job.excitement}
-                                      onChange={(rating) =>
-                                        updateMutation.mutate({
-                                          id: job.id,
-                                          data: { excitement: rating },
-                                        })
-                                      }
-                                      size="sm"
-                                    />
-                                  </div>
-                                )}
-                              </td>
+                              </th>
                             ))}
                           </tr>
-                        ))}
-                        {groupJobs.length === 0 && (
-                          <tr>
-                            <td
-                              colSpan={visibleColumns.length}
-                              className="px-4 py-12 text-center text-gray-500"
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {groupJobs.map((job) => (
+                            <tr
+                              key={job.id}
+                              className={`hover:bg-gray-50 cursor-pointer ${selectedJob?.id === job.id ? 'bg-teal-50' : ''}`}
+                              onClick={() =>
+                                setSelectedJob(selectedJob?.id === job.id ? null : job)
+                              }
                             >
-                              No jobs found. Add your first job!
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                              {visibleColumns.map((col) => (
+                                <td
+                                  key={col.key}
+                                  className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm"
+                                >
+                                  {col.key === 'select' && (
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedJobs.includes(job.id)}
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        handleSelectJob(job.id, e.target.checked);
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-4 h-4 text-teal-600 border-gray-300 rounded"
+                                    />
+                                  )}
+                                  {col.key === 'position' && (
+                                    <span className="font-medium text-gray-900">
+                                      {job.position}
+                                    </span>
+                                  )}
+                                  {col.key === 'company' && (
+                                    <span className="text-gray-700">{job.company}</span>
+                                  )}
+                                  {col.key === 'minSalary' && formatSalary(job.minSalary)}
+                                  {col.key === 'maxSalary' && formatSalary(job.maxSalary)}
+                                  {col.key === 'location' && (
+                                    <span className="text-gray-600">{job.location || 'N/A'}</span>
+                                  )}
+                                  {col.key === 'status' && (
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      <StatusDropdown
+                                        value={job.status}
+                                        onChange={(status) =>
+                                          updateMutation.mutate({ id: job.id, data: { status } })
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                  {col.key === 'dateSaved' && (
+                                    <span className="whitespace-nowrap">
+                                      {formatDate(job.dateSaved)}
+                                    </span>
+                                  )}
+                                  {col.key === 'deadline' && (
+                                    <span className="whitespace-nowrap">
+                                      {formatDate(job.deadline)}
+                                    </span>
+                                  )}
+                                  {col.key === 'dateApplied' && (
+                                    <span className="whitespace-nowrap">
+                                      {formatDate(job.dateApplied)}
+                                    </span>
+                                  )}
+                                  {col.key === 'followUp' && (
+                                    <span className="whitespace-nowrap">
+                                      {formatDate(job.followUp)}
+                                    </span>
+                                  )}
+                                  {col.key === 'excitement' && (
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      <StarRating
+                                        rating={job.excitement}
+                                        onChange={(rating) =>
+                                          updateMutation.mutate({
+                                            id: job.id,
+                                            data: { excitement: rating },
+                                          })
+                                        }
+                                        size="sm"
+                                      />
+                                    </div>
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                          {groupJobs.length === 0 && (
+                            <tr>
+                              <td
+                                colSpan={visibleColumns.length}
+                                className="px-4 py-12 text-center text-gray-500"
+                              >
+                                No jobs found. Add your first job!
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ))
@@ -621,45 +655,47 @@ export default function JobTracker() {
           </div>
         </div>
 
-        {/* Detail Panel */}
+        {/* Detail Panel - Full screen on mobile, side panel on desktop */}
         {selectedJob && (
-          <div className="fixed right-0 top-0 h-full">
-            <JobDetailPanel
-              job={selectedJob}
-              onClose={() => setSelectedJob(null)}
-              onUpdate={(data) => updateMutation.mutate({ id: selectedJob.id, data })}
-              onDelete={() => setDeletingJob(selectedJob)}
-            />
+          <div className="fixed inset-0 lg:right-0 lg:left-auto lg:w-96 lg:top-[73px] h-full z-40 bg-black lg:bg-transparent bg-opacity-50 lg:bg-opacity-0">
+            <div className="h-full bg-white lg:shadow-xl">
+              <JobDetailPanel
+                job={selectedJob}
+                onClose={() => setSelectedJob(null)}
+                onUpdate={(data) => updateMutation.mutate({ id: selectedJob.id, data })}
+                onDelete={() => setDeletingJob(selectedJob)}
+              />
+            </div>
           </div>
         )}
-
-        {/* Add/Edit Modal */}
-        <AddJobModal
-          isOpen={isAddModalOpen || !!editingJob}
-          onClose={() => {
-            setIsAddModalOpen(false);
-            setEditingJob(null);
-          }}
-          onSubmit={(data) => {
-            if (editingJob) {
-              updateMutation.mutate({ id: editingJob.id, data });
-            } else {
-              createMutation.mutate(data);
-            }
-          }}
-          initialData={editingJob || undefined}
-        />
-
-        {/* Delete Modal */}
-        {deletingJob && (
-          <DeleteConfirmModal
-            job={deletingJob}
-            isDeleting={deleteMutation.isPending}
-            onConfirm={() => deleteMutation.mutate(deletingJob.id)}
-            onCancel={() => setDeletingJob(null)}
-          />
-        )}
       </div>
+
+      {/* Add/Edit Modal */}
+      <AddJobModal
+        isOpen={isAddModalOpen || !!editingJob}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingJob(null);
+        }}
+        onSubmit={(data) => {
+          if (editingJob) {
+            updateMutation.mutate({ id: editingJob.id, data });
+          } else {
+            createMutation.mutate(data);
+          }
+        }}
+        initialData={editingJob || undefined}
+      />
+
+      {/* Delete Modal */}
+      {deletingJob && (
+        <DeleteConfirmModal
+          job={deletingJob}
+          isDeleting={deleteMutation.isPending}
+          onConfirm={() => deleteMutation.mutate(deletingJob.id)}
+          onCancel={() => setDeletingJob(null)}
+        />
+      )}
     </div>
   );
 }
