@@ -10,6 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  password     String    // Hashed password
+  name         String?   // Optional user name
+  refreshToken String?   // Store refresh token
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // Relations
+  jobs         Job[]
+  
+  @@index([email])
+}
+
 model Job {
   id            Int       @id @default(autoincrement())
   position      String    // Job Position
@@ -30,9 +45,14 @@ model Job {
   archived      Boolean   @default(false) // Is job archived
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  userId        Int       // Foreign key to User
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([company])
   @@index([dateSaved])
   @@index([archived])
+  @@index([userId])
 }

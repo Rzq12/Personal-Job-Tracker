@@ -1,4 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelResponse } from '@vercel/node';
+import { authMiddleware, type AuthRequest } from '../lib/authMiddleware';
 import { isDemoMode, getDemoJobs, getAllDemoJobs, createDemoJob } from '../lib/demo-data';
 
 const getPrisma = async () => {
@@ -7,10 +8,10 @@ const getPrisma = async () => {
   return prisma;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: AuthRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -32,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function getJobs(req: VercelRequest, res: VercelResponse) {
+async function getJobs(req: AuthRequest, res: VercelResponse) {
   const {
     page = '1',
     size = '20',
@@ -44,8 +45,14 @@ async function getJobs(req: VercelRequest, res: VercelResponse) {
 
   const pageNum = parseInt(page, 10);
   const sizeNum = parseInt(size, 10);
-  // archived=true -> show only archived, archived=false -> show only non-archived
   const archivedFilter = archived === 'true' ? true : false;
+  
+  // Get userId from auth middleware
+  const userId = req.user?.userId;
+
+  if (!userId && !isDemoMode()) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   // Demo mode
   if (isDemoMode()) {
@@ -96,7 +103,9 @@ async function getJobs(req: VercelRequest, res: VercelResponse) {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: any = {};
+  const where: any = {
+    userId: userId, // Filter by userId
+  };
 
   if (search) {
     where.OR = [
@@ -136,7 +145,13 @@ async function getJobs(req: VercelRequest, res: VercelResponse) {
   });
 }
 
-async function createJob(req: VercelRequest, res: VercelResponse) {
+async function createJob(req: AuthRequest, res: VercelResponse) {
+  const userId = req.user?.userId;
+
+  if (!userId && !isDemoMode()) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   const {
     position,
     company,
@@ -206,8 +221,12 @@ async function createJob(req: VercelRequest, res: VercelResponse) {
       keywords: keywords || [],
       link: link || null,
       notes: notes || null,
+      userId: userId!, // Associate job with user
     },
   });
 
   return res.status(201).json({ data: job });
 }
+
+// Export with auth middleware
+export default authMiddleware(handler);

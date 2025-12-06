@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { authMiddleware } from '../lib/authMiddleware';
 import { isDemoMode, getDemoJob, updateDemoJob, deleteDemoJob } from '../lib/demo-data';
 
 const getPrisma = async () => {
@@ -20,10 +21,10 @@ const VALID_STATUSES = [
   'Archived',
 ];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -41,11 +42,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
-      return await getJob(jobId, res);
+      return await getJob(jobId, req, res);
     } else if (req.method === 'PUT') {
       return await updateJob(jobId, req, res);
     } else if (req.method === 'DELETE') {
-      return await deleteJob(jobId, res);
+      return await deleteJob(jobId, req, res);
     } else {
       return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -58,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function getJob(id: number, res: VercelResponse) {
+async function getJob(id: number, req: VercelRequest, res: VercelResponse) {
   // Demo mode
   if (isDemoMode()) {
     const job = getDemoJob(id);
@@ -71,8 +72,13 @@ async function getJob(id: number, res: VercelResponse) {
   const prisma = await getPrisma();
   if (!prisma) return res.status(500).json({ error: 'Database not configured' });
 
-  const job = await prisma.job.findUnique({
-    where: { id },
+  const userId = (req as any).user?.userId;
+
+  const job = await prisma.job.findFirst({
+    where: { 
+      id,
+      userId, // Only return job if it belongs to the authenticated user
+    },
   });
 
   if (!job) {
@@ -156,9 +162,14 @@ async function updateJob(id: number, req: VercelRequest, res: VercelResponse) {
   const prisma = await getPrisma();
   if (!prisma) return res.status(500).json({ error: 'Database not configured' });
 
-  // Check if job exists
-  const existingJob = await prisma.job.findUnique({
-    where: { id },
+  const userId = (req as any).user?.userId;
+
+  // Check if job exists and belongs to user
+  const existingJob = await prisma.job.findFirst({
+    where: { 
+      id,
+      userId, // Ensure user owns this job
+    },
   });
 
   if (!existingJob) {
@@ -193,7 +204,7 @@ async function updateJob(id: number, req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({ data: job });
 }
 
-async function deleteJob(id: number, res: VercelResponse) {
+async function deleteJob(id: number, req: VercelRequest, res: VercelResponse) {
   // Demo mode
   if (isDemoMode()) {
     const success = deleteDemoJob(id);
@@ -206,9 +217,14 @@ async function deleteJob(id: number, res: VercelResponse) {
   const prisma = await getPrisma();
   if (!prisma) return res.status(500).json({ error: 'Database not configured' });
 
-  // Check if job exists
-  const existingJob = await prisma.job.findUnique({
-    where: { id },
+  const userId = (req as any).user?.userId;
+
+  // Check if job exists and belongs to user
+  const existingJob = await prisma.job.findFirst({
+    where: { 
+      id,
+      userId, // Ensure user owns this job
+    },
   });
 
   if (!existingJob) {
@@ -231,7 +247,9 @@ function isValidUrl(string: string): boolean {
   try {
     new URL(string);
     return true;
-  } catch {
+  } catch (_) {
     return false;
   }
 }
+
+export default authMiddleware(handler);

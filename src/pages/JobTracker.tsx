@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../lib/AuthContext';
 import { api } from '../lib/api';
 import type { Job, JobInput, TableColumn } from '../lib/types';
 import { DEFAULT_COLUMNS, PIPELINE_STATUSES } from '../lib/types';
@@ -15,6 +16,16 @@ import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 export default function JobTracker() {
   const queryClient = useQueryClient();
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    // Wait for animation
+    setTimeout(() => {
+      logout();
+    }, 300);
+  };
 
   // State
   const [columns, setColumns] = useState<TableColumn[]>(DEFAULT_COLUMNS);
@@ -259,11 +270,51 @@ export default function JobTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header with Logout */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Job Tracker</h1>
+              <p className="text-sm text-gray-500">{user?.email}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoggingOut ? (
+              <>
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Logging out...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </>
+            )}
+          </button>
+        </div>
+      </header>
+
       {/* Main Content */}
-      <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
-      >
+      <div className="flex-1 flex">
+        <div
+          className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
+        >
         {/* Pipeline Status Bar */}
         <div className="p-6 pb-0">
           <PipelineStatusBar
@@ -575,6 +626,7 @@ export default function JobTracker() {
           onCancel={() => setDeletingJob(null)}
         />
       )}
+      </div>
     </div>
   );
 }

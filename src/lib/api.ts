@@ -9,17 +9,67 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
+  private getAuthToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  private async refreshAccessToken(): Promise<boolean> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return false;
+
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/refresh-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.accessToken);
+        return true;
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+    }
+
+    return false;
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    const token = this.getAuthToken();
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
     };
 
-    const response = await fetch(url, config);
+    let response = await fetch(url, config);
+
+    // Handle 401 - token expired
+    if (response.status === 401 && !endpoint.includes('/auth/')) {
+      const refreshed = await this.refreshAccessToken();
+      if (refreshed) {
+        // Retry request with new token
+        const newToken = this.getAuthToken();
+        config.headers = {
+          ...config.headers,
+          ...(newToken && { Authorization: `Bearer ${newToken}` }),
+        };
+        response = await fetch(url, config);
+      } else {
+        // Redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+        throw new Error('Session expired');
+      }
+    }
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({
