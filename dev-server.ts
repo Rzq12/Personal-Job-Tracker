@@ -9,25 +9,15 @@ import jobsHandlerModule from './api/jobs/index';
 import jobIdHandlerModule from './api/jobs/[id]';
 import exportHandlerModule from './api/jobs/export';
 
-// Import auth handlers
-import registerHandlerModule from './api/auth/register';
-import loginHandlerModule from './api/auth/login';
-import meHandlerModule from './api/auth/me';
-import refreshTokenHandlerModule from './api/auth/refresh-token';
-import logoutHandlerModule from './api/auth/logout';
+// Import unified auth handler
+import authHandlerModule from './api/auth/index';
 
 // Extract default export (handle both ESM and CommonJS)
 const statsHandler = (statsHandlerModule as any).default || statsHandlerModule;
 const jobsHandler = (jobsHandlerModule as any).default || jobsHandlerModule;
 const jobIdHandler = (jobIdHandlerModule as any).default || jobIdHandlerModule;
 const exportHandler = (exportHandlerModule as any).default || exportHandlerModule;
-
-// Extract auth handlers
-const registerHandler = (registerHandlerModule as any).default || registerHandlerModule;
-const loginHandler = (loginHandlerModule as any).default || loginHandlerModule;
-const meHandler = (meHandlerModule as any).default || meHandlerModule;
-const refreshTokenHandler = (refreshTokenHandlerModule as any).default || refreshTokenHandlerModule;
-const logoutHandler = (logoutHandlerModule as any).default || logoutHandlerModule;
+const authHandler = (authHandlerModule as any).default || authHandlerModule;
 
 const app = express();
 const PORT = 3002;
@@ -45,12 +35,8 @@ const adaptHandler = (handler: Function) => {
 };
 
 // Routes
-// Auth routes
-app.all('/api/auth/register', adaptHandler(registerHandler));
-app.all('/api/auth/login', adaptHandler(loginHandler));
-app.all('/api/auth/me', adaptHandler(meHandler));
-app.all('/api/auth/refresh-token', adaptHandler(refreshTokenHandler));
-app.all('/api/auth/logout', adaptHandler(logoutHandler));
+// Auth routes (unified handler with query params)
+app.all('/api/auth', adaptHandler(authHandler));
 
 // Job routes
 app.all('/api/stats', adaptHandler(statsHandler));
