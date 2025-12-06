@@ -276,8 +276,18 @@ export default function JobTracker() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div>
@@ -293,15 +303,31 @@ export default function JobTracker() {
             {isLoggingOut ? (
               <>
                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Logging out...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 Logout
               </>
@@ -315,36 +341,81 @@ export default function JobTracker() {
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
         >
-        {/* Pipeline Status Bar */}
-        <div className="p-6 pb-0">
-          <PipelineStatusBar
-            counts={pipelineCounts}
-            onStatusClick={handlePipelineClick}
-            activeStatus={pipelineFilter}
-          />
-        </div>
+          {/* Pipeline Status Bar */}
+          <div className="p-6 pb-0">
+            <PipelineStatusBar
+              counts={pipelineCounts}
+              onStatusClick={handlePipelineClick}
+              activeStatus={pipelineFilter}
+            />
+          </div>
 
-        {/* Toolbar */}
-        <div className="p-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {selectedJobs.length > 0 ? (
-              <>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    onChange={() => setSelectedJobs([])}
-                    className="w-4 h-4 text-teal-600 border-gray-300 rounded"
-                  />
-                  <span className="text-sm font-medium text-teal-700">
-                    {selectedJobs.length} selected
-                  </span>
-                </div>
+          {/* Toolbar */}
+          <div className="p-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {selectedJobs.length > 0 ? (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg">
+                    <input
+                      type="checkbox"
+                      checked={true}
+                      onChange={() => setSelectedJobs([])}
+                      className="w-4 h-4 text-teal-600 border-gray-300 rounded"
+                    />
+                    <span className="text-sm font-medium text-teal-700">
+                      {selectedJobs.length} selected
+                    </span>
+                  </div>
 
-                {/* Bulk Status Button */}
-                <div className="relative">
+                  {/* Bulk Status Button */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setBulkStatusOpen(!bulkStatusOpen)}
+                      className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      Status
+                    </button>
+                    {bulkStatusOpen && (
+                      <div className="absolute left-0 z-50 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+                        {[
+                          'Bookmarked',
+                          'Applying',
+                          'Applied',
+                          'Interviewing',
+                          'Negotiating',
+                          'Accepted',
+                          'I Withdrew',
+                          'Not Selected',
+                          'No Response',
+                        ].map((status) => (
+                          <button
+                            key={status}
+                            onClick={() => handleBulkStatusChange(status)}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bulk Archive/Unarchive Button */}
                   <button
-                    onClick={() => setBulkStatusOpen(!bulkStatusOpen)}
+                    onClick={showArchived ? handleBulkUnarchive : handleBulkArchive}
                     className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,280 +423,242 @@ export default function JobTracker() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
                       />
                     </svg>
-                    Status
+                    {showArchived ? 'Unarchive' : 'Archive'}
                   </button>
-                  {bulkStatusOpen && (
-                    <div className="absolute left-0 z-50 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
-                      {[
-                        'Bookmarked',
-                        'Applying',
-                        'Applied',
-                        'Interviewing',
-                        'Negotiating',
-                        'Accepted',
-                        'I Withdrew',
-                        'Not Selected',
-                        'No Response',
-                      ].map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => handleBulkStatusChange(status)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
 
-                {/* Bulk Archive/Unarchive Button */}
-                <button
-                  onClick={showArchived ? handleBulkUnarchive : handleBulkArchive}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                    />
-                  </svg>
-                  {showArchived ? 'Unarchive' : 'Archive'}
-                </button>
-
-                {/* Bulk Delete Button */}
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={bulkDeleting}
-                  className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                  Delete
-                </button>
-              </>
-            ) : (
-              <GroupByDropdown value={groupBy} onChange={setGroupBy} />
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <ColumnsDropdown columns={columns} onChange={setColumns} />
-            <MenuDropdown
-              onExportReport={handleExport}
-              onDownloadData={handleExport}
-              onToggleArchived={() => setShowArchived(!showArchived)}
-              showArchived={showArchived}
-            />
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Add a New Job
-            </button>
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="flex-1 px-6 pb-6 overflow-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+                  {/* Bulk Delete Button */}
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={bulkDeleting}
+                    className="px-3 py-1.5 border border-red-300 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Delete
+                  </button>
+                </>
+              ) : (
+                <GroupByDropdown value={groupBy} onChange={setGroupBy} />
+              )}
             </div>
-          ) : (
-            Object.entries(groupedJobs).map(([group, groupJobs]) => (
-              <div key={group} className="mb-6">
-                {groupBy === 'Status' && (
-                  <h3 className="text-sm font-medium text-gray-500 mb-2 px-2">
-                    {group} ({groupJobs.length})
-                  </h3>
-                )}
-                <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto overflow-y-visible">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200">
-                        {visibleColumns.map((col) => (
-                          <th
-                            key={col.key}
-                            className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
-                            style={{ width: col.width }}
-                            onClick={() =>
-                              col.sortable && col.key !== 'select' && handleSort(col.key as string)
-                            }
-                          >
-                            {col.key === 'select' ? (
-                              <input
-                                type="checkbox"
-                                checked={
-                                  selectedJobs.length === groupJobs.length && groupJobs.length > 0
-                                }
-                                onChange={(e) => handleSelectAll(e.target.checked)}
-                                className="w-4 h-4 text-teal-600 border-gray-300 rounded"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-1">
-                                {col.label}
-                                {sortField === col.key && (
-                                  <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d={sortOrder === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'}
-                                    />
-                                  </svg>
-                                )}
-                              </div>
-                            )}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {groupJobs.map((job) => (
-                        <tr
-                          key={job.id}
-                          className={`hover:bg-gray-50 cursor-pointer ${selectedJob?.id === job.id ? 'bg-teal-50' : ''}`}
-                          onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
-                        >
+
+            <div className="flex items-center gap-2">
+              <ColumnsDropdown columns={columns} onChange={setColumns} />
+              <MenuDropdown
+                onExportReport={handleExport}
+                onDownloadData={handleExport}
+                onToggleArchived={() => setShowArchived(!showArchived)}
+                showArchived={showArchived}
+              />
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Add a New Job
+              </button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="flex-1 px-6 pb-6 overflow-auto">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+              </div>
+            ) : (
+              Object.entries(groupedJobs).map(([group, groupJobs]) => (
+                <div key={group} className="mb-6">
+                  {groupBy === 'Status' && (
+                    <h3 className="text-sm font-medium text-gray-500 mb-2 px-2">
+                      {group} ({groupJobs.length})
+                    </h3>
+                  )}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto overflow-y-visible">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
                           {visibleColumns.map((col) => (
-                            <td key={col.key} className="px-4 py-3 text-sm">
-                              {col.key === 'select' && (
+                            <th
+                              key={col.key}
+                              className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                              style={{ width: col.width }}
+                              onClick={() =>
+                                col.sortable &&
+                                col.key !== 'select' &&
+                                handleSort(col.key as string)
+                              }
+                            >
+                              {col.key === 'select' ? (
                                 <input
                                   type="checkbox"
-                                  checked={selectedJobs.includes(job.id)}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    handleSelectJob(job.id, e.target.checked);
-                                  }}
-                                  onClick={(e) => e.stopPropagation()}
+                                  checked={
+                                    selectedJobs.length === groupJobs.length && groupJobs.length > 0
+                                  }
+                                  onChange={(e) => handleSelectAll(e.target.checked)}
                                   className="w-4 h-4 text-teal-600 border-gray-300 rounded"
                                 />
-                              )}
-                              {col.key === 'position' && (
-                                <span className="font-medium text-gray-900">{job.position}</span>
-                              )}
-                              {col.key === 'company' && (
-                                <span className="text-gray-700">{job.company}</span>
-                              )}
-                              {col.key === 'minSalary' && formatSalary(job.minSalary)}
-                              {col.key === 'maxSalary' && formatSalary(job.maxSalary)}
-                              {col.key === 'location' && (
-                                <span className="text-gray-600">{job.location || 'N/A'}</span>
-                              )}
-                              {col.key === 'status' && (
-                                <div onClick={(e) => e.stopPropagation()}>
-                                  <StatusDropdown
-                                    value={job.status}
-                                    onChange={(status) =>
-                                      updateMutation.mutate({ id: job.id, data: { status } })
-                                    }
-                                  />
+                              ) : (
+                                <div className="flex items-center gap-1">
+                                  {col.label}
+                                  {sortField === col.key && (
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d={sortOrder === 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'}
+                                      />
+                                    </svg>
+                                  )}
                                 </div>
                               )}
-                              {col.key === 'dateSaved' && formatDate(job.dateSaved)}
-                              {col.key === 'deadline' && formatDate(job.deadline)}
-                              {col.key === 'dateApplied' && formatDate(job.dateApplied)}
-                              {col.key === 'followUp' && formatDate(job.followUp)}
-                              {col.key === 'excitement' && (
-                                <div onClick={(e) => e.stopPropagation()}>
-                                  <StarRating
-                                    rating={job.excitement}
-                                    onChange={(rating) =>
-                                      updateMutation.mutate({
-                                        id: job.id,
-                                        data: { excitement: rating },
-                                      })
-                                    }
-                                    size="sm"
-                                  />
-                                </div>
-                              )}
-                            </td>
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                      {groupJobs.length === 0 && (
-                        <tr>
-                          <td
-                            colSpan={visibleColumns.length}
-                            className="px-4 py-12 text-center text-gray-500"
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {groupJobs.map((job) => (
+                          <tr
+                            key={job.id}
+                            className={`hover:bg-gray-50 cursor-pointer ${selectedJob?.id === job.id ? 'bg-teal-50' : ''}`}
+                            onClick={() => setSelectedJob(selectedJob?.id === job.id ? null : job)}
                           >
-                            No jobs found. Add your first job!
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                            {visibleColumns.map((col) => (
+                              <td key={col.key} className="px-4 py-3 text-sm">
+                                {col.key === 'select' && (
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedJobs.includes(job.id)}
+                                    onChange={(e) => {
+                                      e.stopPropagation();
+                                      handleSelectJob(job.id, e.target.checked);
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="w-4 h-4 text-teal-600 border-gray-300 rounded"
+                                  />
+                                )}
+                                {col.key === 'position' && (
+                                  <span className="font-medium text-gray-900">{job.position}</span>
+                                )}
+                                {col.key === 'company' && (
+                                  <span className="text-gray-700">{job.company}</span>
+                                )}
+                                {col.key === 'minSalary' && formatSalary(job.minSalary)}
+                                {col.key === 'maxSalary' && formatSalary(job.maxSalary)}
+                                {col.key === 'location' && (
+                                  <span className="text-gray-600">{job.location || 'N/A'}</span>
+                                )}
+                                {col.key === 'status' && (
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <StatusDropdown
+                                      value={job.status}
+                                      onChange={(status) =>
+                                        updateMutation.mutate({ id: job.id, data: { status } })
+                                      }
+                                    />
+                                  </div>
+                                )}
+                                {col.key === 'dateSaved' && formatDate(job.dateSaved)}
+                                {col.key === 'deadline' && formatDate(job.deadline)}
+                                {col.key === 'dateApplied' && formatDate(job.dateApplied)}
+                                {col.key === 'followUp' && formatDate(job.followUp)}
+                                {col.key === 'excitement' && (
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <StarRating
+                                      rating={job.excitement}
+                                      onChange={(rating) =>
+                                        updateMutation.mutate({
+                                          id: job.id,
+                                          data: { excitement: rating },
+                                        })
+                                      }
+                                      size="sm"
+                                    />
+                                  </div>
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                        {groupJobs.length === 0 && (
+                          <tr>
+                            <td
+                              colSpan={visibleColumns.length}
+                              className="px-4 py-12 text-center text-gray-500"
+                            >
+                              No jobs found. Add your first job!
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Detail Panel */}
-      {selectedJob && (
-        <div className="fixed right-0 top-0 h-full">
-          <JobDetailPanel
-            job={selectedJob}
-            onClose={() => setSelectedJob(null)}
-            onUpdate={(data) => updateMutation.mutate({ id: selectedJob.id, data })}
-            onDelete={() => setDeletingJob(selectedJob)}
-          />
-        </div>
-      )}
+        {/* Detail Panel */}
+        {selectedJob && (
+          <div className="fixed right-0 top-0 h-full">
+            <JobDetailPanel
+              job={selectedJob}
+              onClose={() => setSelectedJob(null)}
+              onUpdate={(data) => updateMutation.mutate({ id: selectedJob.id, data })}
+              onDelete={() => setDeletingJob(selectedJob)}
+            />
+          </div>
+        )}
 
-      {/* Add/Edit Modal */}
-      <AddJobModal
-        isOpen={isAddModalOpen || !!editingJob}
-        onClose={() => {
-          setIsAddModalOpen(false);
-          setEditingJob(null);
-        }}
-        onSubmit={(data) => {
-          if (editingJob) {
-            updateMutation.mutate({ id: editingJob.id, data });
-          } else {
-            createMutation.mutate(data);
-          }
-        }}
-        initialData={editingJob || undefined}
-      />
-
-      {/* Delete Modal */}
-      {deletingJob && (
-        <DeleteConfirmModal
-          job={deletingJob}
-          isDeleting={deleteMutation.isPending}
-          onConfirm={() => deleteMutation.mutate(deletingJob.id)}
-          onCancel={() => setDeletingJob(null)}
+        {/* Add/Edit Modal */}
+        <AddJobModal
+          isOpen={isAddModalOpen || !!editingJob}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditingJob(null);
+          }}
+          onSubmit={(data) => {
+            if (editingJob) {
+              updateMutation.mutate({ id: editingJob.id, data });
+            } else {
+              createMutation.mutate(data);
+            }
+          }}
+          initialData={editingJob || undefined}
         />
-      )}
+
+        {/* Delete Modal */}
+        {deletingJob && (
+          <DeleteConfirmModal
+            job={deletingJob}
+            isDeleting={deleteMutation.isPending}
+            onConfirm={() => deleteMutation.mutate(deletingJob.id)}
+            onCancel={() => setDeletingJob(null)}
+          />
+        )}
       </div>
     </div>
   );

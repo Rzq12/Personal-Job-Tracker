@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     console.log('Register request received:', { email: req.body?.email, name: req.body?.name });
-    
+
     const { email, password, name } = req.body;
 
     // Validation
@@ -99,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('Error stack:', error.stack);
     console.error('Full error:', error);
     console.error('=== REGISTER ERROR END ===');
-    
+
     return res.status(500).json({
       error: 'Registration failed',
       message: error.message || 'Internal server error',

@@ -46,7 +46,7 @@ async function getJobs(req: AuthRequest, res: VercelResponse) {
   const pageNum = parseInt(page, 10);
   const sizeNum = parseInt(size, 10);
   const archivedFilter = archived === 'true' ? true : false;
-  
+
   // Get userId from auth middleware
   const userId = req.user?.userId;
 

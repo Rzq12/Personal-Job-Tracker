@@ -75,7 +75,7 @@ async function getJob(id: number, req: VercelRequest, res: VercelResponse) {
   const userId = (req as any).user?.userId;
 
   const job = await prisma.job.findFirst({
-    where: { 
+    where: {
       id,
       userId, // Only return job if it belongs to the authenticated user
     },
@@ -166,7 +166,7 @@ async function updateJob(id: number, req: VercelRequest, res: VercelResponse) {
 
   // Check if job exists and belongs to user
   const existingJob = await prisma.job.findFirst({
-    where: { 
+    where: {
       id,
       userId, // Ensure user owns this job
     },
@@ -221,7 +221,7 @@ async function deleteJob(id: number, req: VercelRequest, res: VercelResponse) {
 
   // Check if job exists and belongs to user
   const existingJob = await prisma.job.findFirst({
-    where: { 
+    where: {
       id,
       userId, // Ensure user owns this job
     },

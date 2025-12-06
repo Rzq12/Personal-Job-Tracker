@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (email: string, password: string, name?: string) => {
     try {
       console.log('Registering user...', { email, name });
-      
+
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       console.log('Register response status:', response.status);
-      
+
       // Get response text first to debug
       const responseText = await response.text();
       console.log('Register response text:', responseText);
