@@ -112,12 +112,12 @@ export default function JobTracker() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<JobInput> }) => api.updateJob(id, data),
-    onSuccess: (_response, variables) => {
+    onSuccess: (response, variables) => {
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
 
-      // Update selectedJob if it's the one being updated
-      if (selectedJob && selectedJob.id === variables.id) {
-        setSelectedJob({ ...selectedJob, ...variables.data });
+      // Update selectedJob with the actual data from server response
+      if (selectedJob && selectedJob.id === variables.id && response.data) {
+        setSelectedJob(response.data);
       }
 
       setEditingJob(null);
