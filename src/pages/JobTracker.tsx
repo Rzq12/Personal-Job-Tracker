@@ -113,31 +113,40 @@ export default function JobTracker() {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<JobInput> }) => api.updateJob(id, data),
     onSuccess: (response, variables) => {
+      console.log('[Update Success] Response:', response);
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
 
       // Update selectedJob with the actual data from server response
       if (selectedJob && selectedJob.id === variables.id && response.data) {
+        console.log('[Update Success] Updating selectedJob with:', response.data);
         setSelectedJob(response.data);
       }
 
       setEditingJob(null);
     },
+    onError: (error, variables) => {
+      console.error('[Update Error] Failed to update job:', error);
+      console.error('[Update Error] Variables:', variables);
+      alert(`Gagal mengupdate job: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      console.log('Deleting job with ID:', id);
+      console.log('[Delete] Deleting job with ID:', id);
       return api.deleteJob(id);
     },
-    onSuccess: () => {
-      console.log('Delete successful');
+    onSuccess: (response, id) => {
+      console.log('[Delete Success] Response:', response);
+      console.log('[Delete Success] Deleted job ID:', id);
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setDeletingJob(null);
       setSelectedJob(null);
     },
-    onError: (error) => {
-      console.error('Delete failed:', error);
-      alert('Gagal menghapus job. Silakan coba lagi.');
+    onError: (error, id) => {
+      console.error('[Delete Error] Failed to delete job:', error);
+      console.error('[Delete Error] Job ID:', id);
+      alert(`Gagal menghapus job: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setDeletingJob(null);
     },
   });

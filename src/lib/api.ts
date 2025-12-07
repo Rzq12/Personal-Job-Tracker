@@ -40,6 +40,9 @@ class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     const token = this.getAuthToken();
 
+    console.log(`[API Request] ${options.method || 'GET'} ${url}`);
+    console.log('[API Request] Has token:', !!token);
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -50,11 +53,14 @@ class ApiClient {
     };
 
     let response = await fetch(url, config);
+    console.log(`[API Response] Status: ${response.status} ${response.statusText}`);
 
     // Handle 401 - token expired
-    if (response.status === 401 && !endpoint.includes('/auth/')) {
+    if (response.status === 401 && !endpoint.includes('/auth')) {
+      console.log('[API] Token expired, attempting refresh...');
       const refreshed = await this.refreshAccessToken();
       if (refreshed) {
+        console.log('[API] Token refreshed, retrying request...');
         // Retry request with new token
         const newToken = this.getAuthToken();
         config.headers = {
@@ -62,7 +68,9 @@ class ApiClient {
           ...(newToken && { Authorization: `Bearer ${newToken}` }),
         };
         response = await fetch(url, config);
+        console.log(`[API Response] Retry status: ${response.status}`);
       } else {
+        console.log('[API] Token refresh failed, redirecting to login...');
         // Redirect to login
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
@@ -76,10 +84,13 @@ class ApiClient {
         error: 'Request failed',
         message: response.statusText,
       }));
+      console.error(`[API Error] ${response.status}:`, error);
       throw new Error(error.message || 'Request failed');
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('[API Response] Data:', data);
+    return data;
   }
 
   // Jobs endpoints
@@ -109,16 +120,32 @@ class ApiClient {
   }
 
   async updateJob(id: number, data: Partial<JobInput>): Promise<ApiResponse<Job>> {
-    return this.request<ApiResponse<Job>>(`/jobs/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    console.log(`[API] Updating job ${id} with data:`, data);
+    try {
+      const result = await this.request<ApiResponse<Job>>(`/jobs/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      console.log(`[API] Update job ${id} successful:`, result);
+      return result;
+    } catch (error) {
+      console.error(`[API] Update job ${id} failed:`, error);
+      throw error;
+    }
   }
 
   async deleteJob(id: number): Promise<ApiResponse<{ message: string }>> {
-    return this.request<ApiResponse<{ message: string }>>(`/jobs/${id}`, {
-      method: 'DELETE',
-    });
+    console.log(`[API] Deleting job ${id}`);
+    try {
+      const result = await this.request<ApiResponse<{ message: string }>>(`/jobs/${id}`, {
+        method: 'DELETE',
+      });
+      console.log(`[API] Delete job ${id} successful:`, result);
+      return result;
+    } catch (error) {
+      console.error(`[API] Delete job ${id} failed:`, error);
+      throw error;
+    }
   }
 
   // Stats endpoint
