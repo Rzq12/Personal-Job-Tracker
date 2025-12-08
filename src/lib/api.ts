@@ -163,11 +163,33 @@ class ApiClient {
     const query = searchParams.toString();
     const url = `${this.baseUrl}/jobs/export${query ? `?${query}` : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${this.getAuthToken()}`,
+      },
+    });
     if (!response.ok) {
       throw new Error('Export failed');
     }
     return response.blob();
+  }
+
+  // Profile endpoints
+  async updateProfile(data: { name: string }): Promise<{ user: any; message: string }> {
+    return this.request<{ user: any; message: string }>('/auth?action=update-profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<{ message: string }> {
+    return this.request<{ message: string }>('/auth?action=change-password', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 }
 

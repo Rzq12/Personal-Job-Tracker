@@ -37,6 +37,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return await handleRefresh(req, res);
       case 'logout':
         return await handleLogout(req, res);
+      case 'update-profile':
+        return await handleUpdateProfile(req, res);
+      case 'change-password':
+        return await handleChangePassword(req, res);
       default:
         return res.status(400).json({ error: 'Invalid action' });
     }
@@ -286,4 +290,100 @@ async function handleLogout(req: VercelRequest, res: VercelResponse) {
   }
 
   return res.status(200).json({ message: 'Logged out successfully' });
+}
+
+/**
+ * PUT /api/auth?action=update-profile
+ */
+async function handleUpdateProfile(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'PUT') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const token = extractToken(req.headers.authorization);
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  let payload;
+  try {
+    payload = verifyAccessToken(token);
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+
+  const { name } = req.body;
+
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+
+  const user = await prisma.user.update({
+    where: { id: payload.userId },
+    data: { name: name.trim() },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
+    },
+  });
+
+  return res.status(200).json({ user, message: 'Profile updated successfully' });
+}
+
+/**
+ * PUT /api/auth?action=change-password
+ */
+async function handleChangePassword(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'PUT') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const token = extractToken(req.headers.authorization);
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  let payload;
+  try {
+    payload = verifyAccessToken(token);
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Current password and new password are required' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: payload.userId },
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const isValid = await bcrypt.compare(currentPassword, user.password);
+
+  if (!isValid) {
+    return res.status(400).json({ error: 'Current password is incorrect' });
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: payload.userId },
+    data: { password: hashedPassword },
+  });
+
+  return res.status(200).json({ message: 'Password changed successfully' });
 }

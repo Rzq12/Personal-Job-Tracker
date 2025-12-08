@@ -2,7 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './lib/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import JobTracker from './pages/JobTracker';
+import { Interviews } from './pages/Interviews';
+import { Stats } from './pages/Stats';
+import { Settings } from './pages/Settings';
 
 // Private Route Component
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -69,14 +73,47 @@ function App() {
           }
         />
         <Route
-          path="/"
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/jobs"
           element={
             <PrivateRoute>
               <JobTracker />
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/interviews"
+          element={
+            <PrivateRoute>
+              <Interviews />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/stats"
+          element={
+            <PrivateRoute>
+              <Stats />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
