@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import ExcelJS from 'exceljs';
+import { authMiddleware, type AuthRequest } from '../lib/authMiddleware';
 import { isDemoMode, getDemoJobs, getAllDemoJobs } from '../lib/demo-data';
 
 interface JobData {
@@ -30,10 +31,10 @@ const getPrisma = async () => {
   return prisma;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handleExport(req: AuthRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -44,6 +45,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Get authenticated user ID
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    console.log(`[Export] User ${userId} exporting jobs`);
+
     const { status, archived, fromDate, toDate, search } = req.query as Record<string, string>;
     const showArchived = archived === 'true';
 
@@ -79,9 +88,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(500).json({ error: 'Database not configured' });
       }
 
-      // Build where clause
+      // Build where clause with userId filter
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const where: any = {};
+      const where: any = {
+        userId: userId, // CRITICAL: Filter by current user only
+      };
 
       if (search) {
         where.OR = [
@@ -112,11 +123,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         };
       }
 
-      // Fetch all matching jobs
+      // Fetch all matching jobs for this user only
       jobs = await prisma.job.findMany({
         where,
         orderBy: { dateSaved: 'desc' },
       });
+
+      console.log(`[Export] Found ${jobs.length} jobs for user ${userId}`);
     }
 
     // Create Excel workbook
@@ -247,6 +260,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Length', (buffer as ArrayBuffer).byteLength.toString());
 
+    console.log(`[Export] Successfully exported ${jobs.length} jobs for user ${userId}`);
+
     return res.status(200).send(buffer);
   } catch (error) {
     console.error('Export Error:', error);
@@ -276,3 +291,6 @@ function formatCurrency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount);
 }
+
+// Export with authentication middleware
+export default authMiddleware(handleExport);
