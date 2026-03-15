@@ -1,4 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelResponse } from '@vercel/node';
+import { authMiddleware, type AuthRequest } from './lib/authMiddleware';
 import { isDemoMode, getDemoStats } from './lib/demo-data';
 
 const getPrisma = async () => {
@@ -23,10 +24,10 @@ const ALL_STATUSES = [
   'Archived',
 ];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: AuthRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -37,6 +38,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     // Demo mode
     if (isDemoMode()) {
       const stats = getDemoStats();
@@ -52,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const statusCounts = await Promise.all(
       ALL_STATUSES.map(async (status) => ({
         status,
-        count: await prisma.job.count({ where: { status, archived: false } }),
+        count: await prisma.job.count({ where: { userId, status, archived: false } }),
       }))
     );
 
@@ -69,10 +75,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // Get total active (non-archived) jobs
-    const totalActive = await prisma.job.count({ where: { archived: false } });
+    const totalActive = await prisma.job.count({ where: { userId, archived: false } });
 
     // Get archived count
-    const totalArchived = await prisma.job.count({ where: { archived: true } });
+    const totalArchived = await prisma.job.count({ where: { userId, archived: true } });
 
     // Get monthly application counts for the current year
     const currentYear = new Date().getFullYear();
@@ -82,6 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const monthlyData = await prisma.job.groupBy({
       by: ['dateSaved'],
       where: {
+        userId,
         dateSaved: {
           gte: startOfYear,
           lte: endOfYear,
@@ -143,3 +150,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+
+export default authMiddleware(handler);
