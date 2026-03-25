@@ -5,7 +5,7 @@ export function Interviews() {
     <div className="min-h-screen bg-slate-100/60">
       <Sidebar />
 
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 md:ml-72 md:pt-0">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout-shift md:pt-0">
         <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
           <h1 className="text-xl font-bold text-gray-900">Interviews</h1>
           <p className="text-sm text-gray-500">Manage your upcoming interviews</p>

@@ -7,11 +7,18 @@ interface JobDetailPanelProps {
   onClose: () => void;
   onUpdate: (job: Partial<Job>) => void;
   onDelete: () => void;
+  mode?: 'panel' | 'page';
 }
 
 type TabType = 'info' | 'notes';
 
-export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: JobDetailPanelProps) {
+export default function JobDetailPanel({
+  job,
+  onClose,
+  onUpdate,
+  onDelete,
+  mode = 'panel',
+}: JobDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<TabType>('info');
   const [notes, setNotes] = useState(job.notes || '');
   const [isVisible, setIsVisible] = useState(false);
@@ -61,6 +68,11 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
   ]);
 
   const handleClose = () => {
+    if (mode === 'page') {
+      onClose();
+      return;
+    }
+
     setIsClosing(true);
     setTimeout(() => {
       onClose();
@@ -206,25 +218,38 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
 
   return (
     <>
-      {/* Backdrop overlay - Only on mobile/tablet */}
-      <div
-        className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 lg:hidden ${
-          isVisible && !isClosing ? 'opacity-100' : 'opacity-0'
-        }`}
-        onClick={handleClose}
-      />
+      {mode === 'panel' && (
+        <div
+          className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 lg:hidden ${
+            isVisible && !isClosing ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={handleClose}
+        />
+      )}
 
-      {/* Panel - Full screen on mobile, side panel on desktop */}
       <div
-        className={`
-          fixed inset-0 lg:relative lg:w-96 lg:h-full bg-white lg:border-l border-gray-200 
-          flex flex-col z-50 lg:shadow-2xl
-          transform transition-all duration-300 ease-out
-          ${isVisible && !isClosing ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-full opacity-0'}
-        `}
+        className={
+          mode === 'panel'
+            ? `fixed inset-0 lg:relative lg:w-96 lg:h-full bg-white lg:border-l border-gray-200 
+          flex flex-col z-50 lg:shadow-2xl transform transition-all duration-300 ease-out 
+          ${isVisible && !isClosing ? 'translate-x-0 opacity-100' : 'translate-x-full lg:translate-x-full opacity-0'}`
+            : `relative flex h-full min-h-[calc(100vh-220px)] flex-col bg-white ${
+                isVisible ? 'animate-detail-enter' : 'opacity-0'
+              }`
+        }
       >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+          {mode === 'page' && (
+            <button
+              onClick={handleClose}
+              className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              <span aria-hidden="true">←</span>
+              Back to Jobs
+            </button>
+          )}
+
           <div className="flex justify-between items-start gap-3">
             <div className="flex-1 min-w-0 animate-fade-in">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 break-words">
@@ -257,24 +282,26 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
                 onChange={(rating) => onUpdate({ excitement: rating })}
                 size="md"
               />
-              <button
-                onClick={handleClose}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-all duration-200 hover:rotate-90 touch-manipulation"
-              >
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {mode === 'panel' && (
+                <button
+                  onClick={handleClose}
+                  className="p-1.5 hover:bg-gray-100 rounded-full transition-all duration-200 hover:rotate-90 touch-manipulation"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
 
@@ -314,7 +341,7 @@ export default function JobDetailPanel({ job, onClose, onUpdate, onDelete }: Job
                 onClick={handleClose}
                 className="px-2.5 sm:px-3 py-1 text-xs font-medium text-gray-500 hover:bg-gray-100 rounded-full whitespace-nowrap transition-colors duration-200 touch-manipulation"
               >
-                Close Job
+                {mode === 'page' ? 'Back to Jobs' : 'Close Job'}
               </button>
             </div>
           </div>
