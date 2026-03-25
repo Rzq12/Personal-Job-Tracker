@@ -102,10 +102,69 @@ h6 {
   }
 }
 
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleXIn {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@keyframes detailEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.35s ease-out both;
 }
 
 .animate-slide-down {
   animation: slideDown 0.25s ease-out both;
+}
+
+.animate-fade-slide-in {
+  animation: fadeSlideIn 0.28s ease-out both;
+}
+
+.animate-scale-x {
+  animation: scaleXIn 0.22s ease-out both;
+}
+
+.animate-detail-enter {
+  animation: detailEnter 0.3s ease-out both;
+}
+
+@media (min-width: 768px) {
+  .sidebar-layout-shift {
+    margin-left: 18rem;
+    transition: margin-left 0.2s ease;
+  }
+
+  .sidebar-collapsed .sidebar-layout-shift {
+    margin-left: 5rem;
+  }
 }

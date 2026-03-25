@@ -1,10 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 
 export default function Sidebar() {
   const { logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem('jt-sidebar-collapsed') === '1';
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('jt-sidebar-collapsed', desktopCollapsed ? '1' : '0');
+    document.documentElement.classList.toggle('sidebar-collapsed', desktopCollapsed);
+
+    return () => {
+      document.documentElement.classList.remove('sidebar-collapsed');
+    };
+  }, [desktopCollapsed]);
 
   const menuItems = [
     {
@@ -85,7 +99,7 @@ export default function Sidebar() {
     },
   ];
 
-  const navList = (
+  const renderNavList = (compact: boolean) => (
     <nav className="flex-1 p-3">
       <div className="space-y-1.5 rounded-2xl border border-slate-200/80 bg-white p-2 shadow-sm">
         {menuItems.map((item) => (
@@ -94,28 +108,41 @@ export default function Sidebar() {
             to={item.path}
             onClick={() => setMobileOpen(false)}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+              `flex items-center ${compact ? 'justify-center' : 'gap-3'} rounded-xl ${compact ? 'px-2.5 py-2.5' : 'px-3.5 py-2.5'} text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-600/30'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`
             }
+            title={compact ? item.name : undefined}
           >
             {item.icon}
-            <span>{item.name}</span>
+            {!compact && <span>{item.name}</span>}
           </NavLink>
         ))}
       </div>
     </nav>
   );
 
-  const logoutButton = (
+  const renderLogoutButton = (compact: boolean) => (
     <div className="p-3 pt-0">
       <button
         onClick={logout}
-        className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+        className={`w-full rounded-xl border border-rose-200 bg-rose-50 ${compact ? 'px-2.5 py-2.5' : 'px-4 py-2.5'} text-sm font-semibold text-rose-700 transition hover:bg-rose-100 ${compact ? 'inline-flex items-center justify-center' : ''}`}
+        title={compact ? 'Logout' : undefined}
       >
-        Logout
+        {compact ? (
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+        ) : (
+          'Logout'
+        )}
       </button>
     </div>
   );
@@ -159,15 +186,59 @@ export default function Sidebar() {
         </div>
       </header>
 
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-72 border-r border-slate-200/80 bg-slate-50/90 backdrop-blur md:flex md:flex-col">
-        <div className="p-5 pb-4">
-          <div className="rounded-2xl bg-gradient-to-br from-cyan-700 to-sky-600 p-4 text-white shadow-lg shadow-cyan-700/30">
-            <p className="text-lg font-semibold">Job Tracker</p>
-            <p className="text-xs text-cyan-100">Track your career with focus</p>
+      <aside
+        className={`fixed left-0 top-0 z-30 hidden h-screen border-r border-slate-200/80 bg-slate-50/90 backdrop-blur md:flex md:flex-col transition-[width] duration-200 ${desktopCollapsed ? 'w-20' : 'w-72'}`}
+      >
+        <div className="p-3 pb-2">
+          <div
+            className={`rounded-2xl bg-gradient-to-br from-cyan-700 to-sky-600 p-3 text-white shadow-lg shadow-cyan-700/30 ${desktopCollapsed ? 'text-center' : ''}`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className={desktopCollapsed ? 'mx-auto' : ''}>
+                <p className={`font-semibold ${desktopCollapsed ? 'text-base' : 'text-lg'}`}>JT</p>
+                {!desktopCollapsed && (
+                  <p className="text-xs text-cyan-100">Track your career with focus</p>
+                )}
+              </div>
+
+              {!desktopCollapsed && (
+                <button
+                  onClick={() => setDesktopCollapsed(true)}
+                  className="rounded-lg bg-white/15 p-1.5 text-cyan-50 hover:bg-white/25"
+                  aria-label="Collapse sidebar"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {desktopCollapsed && (
+              <button
+                onClick={() => setDesktopCollapsed(false)}
+                className="mt-2 inline-flex rounded-lg bg-white/15 p-1.5 text-cyan-50 hover:bg-white/25"
+                aria-label="Expand sidebar"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
-        {navList}
-        {logoutButton}
+        {renderNavList(desktopCollapsed)}
+        {renderLogoutButton(desktopCollapsed)}
       </aside>
 
       <div
@@ -201,8 +272,8 @@ export default function Sidebar() {
               </svg>
             </button>
           </div>
-          {navList}
-          {logoutButton}
+          {renderNavList(false)}
+          {renderLogoutButton(false)}
         </aside>
       </div>
     </>

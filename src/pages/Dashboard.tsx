@@ -86,22 +86,40 @@ export default function Dashboard() {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="min-h-screen pt-16 md:ml-72 md:pt-0">
+      <div className="min-h-screen pt-16 sidebar-layout-shift md:pt-0">
         {/* Header */}
         <DashboardHeader stats={stats} />
 
         {/* Content */}
         <div className="space-y-6 p-4 sm:p-6 lg:p-8">
+          <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Workspace
+                </p>
+                <h2 className="text-xl font-semibold text-slate-900">Career Pipeline Overview</h2>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+                <span className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-teal-700">
+                  Jobs
+                </span>
+                <span className="px-3 py-1.5 text-xs font-semibold text-slate-500">People</span>
+                <span className="px-3 py-1.5 text-xs font-semibold text-slate-500">Companies</span>
+              </div>
+            </div>
+          </div>
+
           {/* Quick Actions */}
           <QuickActions onAddJob={() => setIsAddModalOpen(true)} onExport={handleExport} />
 
           {/* Recent Applications */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Applications</h2>
               <button
                 onClick={() => navigate('/jobs')}
-                className="text-sm text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-teal-700 hover:bg-slate-50 flex items-center gap-1"
               >
                 View all
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +162,7 @@ export default function Dashboard() {
                   <div
                     key={job.id}
                     onClick={() => navigate('/jobs')}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-teal-200 transition-all duration-200 cursor-pointer"
+                    className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-teal-200 transition-all duration-200 cursor-pointer"
                   >
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 truncate">{job.position}</h3>
@@ -169,7 +187,7 @@ export default function Dashboard() {
           {/* Activity Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Status Breakdown */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Status Breakdown</h2>
               <div className="space-y-3">
                 {[
@@ -208,8 +226,8 @@ export default function Dashboard() {
             </div>
 
             {/* Quick Tips */}
-            <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl border border-teal-200 p-6">
-              <h2 className="text-lg font-semibold text-teal-900 mb-4">💡 Quick Tips</h2>
+            <div className="bg-gradient-to-br from-teal-50 via-cyan-50 to-slate-50 rounded-2xl border border-teal-200 p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-teal-900 mb-4">Quick Tips</h2>
               <ul className="space-y-3 text-sm text-teal-800">
                 <li className="flex items-start gap-2">
                   <span className="text-teal-600 mt-0.5">•</span>
