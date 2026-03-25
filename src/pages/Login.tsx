@@ -29,160 +29,143 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
-      <div className="w-full max-w-md animate-fade-in">
-        <div className="bg-white rounded-lg shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block p-3 bg-teal-100 rounded-full mb-4">
-              <svg
-                className="w-8 h-8 text-teal-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Job Tracker</h1>
-            <p className="text-gray-600 mt-2">Sign in to your account</p>
+    <div className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-300/40 lg:grid-cols-[1.1fr_1fr]">
+        <section className="relative hidden overflow-hidden bg-gradient-to-br from-cyan-700 via-sky-700 to-indigo-700 p-10 text-white lg:flex lg:flex-col lg:justify-between">
+          <div className="absolute -left-20 top-24 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-indigo-300/20 blur-3xl" />
+          <div className="relative">
+            <p className="mb-3 inline-flex rounded-full border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">
+              Career OS
+            </p>
+            <h1 className="max-w-md text-4xl font-bold leading-tight">
+              Track every opportunity with clarity and confidence.
+            </h1>
+            <p className="mt-4 max-w-md text-cyan-100/90">
+              Keep your applications, status pipeline, and interview momentum in one elegant
+              workflow.
+            </p>
           </div>
+          <div className="relative space-y-3 rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur">
+            <p className="text-sm text-cyan-100">This week highlight</p>
+            <p className="text-2xl font-semibold">Stay consistent, close more offers.</p>
+          </div>
+        </section>
 
-          {/* Success Message */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg animate-slide-down">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <p className="text-sm text-green-600 font-medium">
-                  Login successful! Redirecting...
-                </p>
+        <section className="flex items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-md animate-fade-in">
+            <div className="mb-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
+                Welcome Back
+              </p>
+              <h2 className="mt-2 text-3xl font-bold text-slate-900">Sign in to Job Tracker</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Continue your application flow and keep progress moving.
+              </p>
+            </div>
+
+            {success && (
+              <div
+                className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 animate-slide-down"
+                role="status"
+                aria-live="polite"
+              >
+                Login successful. Redirecting...
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-slide-down">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                <p className="text-sm text-red-600">{error}</p>
+            {error && (
+              <div
+                className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 animate-slide-down"
+                role="alert"
+                aria-live="assertive"
+              >
+                {error}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="you@example.com"
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-sm font-semibold text-slate-700"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  placeholder="you@example.com"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="••••••••"
-              />
-            </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-sm font-semibold text-slate-700"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  placeholder="••••••••"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || success}
-              className="w-full py-2.5 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : success ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  Success!
-                </span>
-              ) : (
-                'Sign in'
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isLoading || success}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    Signing in...
+                  </>
+                ) : success ? (
+                  'Success!'
+                ) : (
+                  'Sign in'
+                )}
+              </button>
+            </form>
 
-          {/* Register Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-slate-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-teal-600 hover:text-teal-700 font-medium">
-                Sign up
+              <Link
+                to="/register"
+                className="font-semibold text-cyan-700 transition hover:text-cyan-800"
+              >
+                Create one
               </Link>
             </p>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

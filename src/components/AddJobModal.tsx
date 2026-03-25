@@ -76,7 +76,12 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={initialData ? 'Edit job modal' : 'Add new job modal'}
+    >
       {/* Backdrop */}
       <div
         className={`absolute inset-0 bg-slate-900 transition-opacity duration-300 ${isVisible ? 'opacity-45' : 'opacity-0'}`}
@@ -97,6 +102,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
             <button
               onClick={handleClose}
               className="touch-manipulation rounded-full p-2 transition-colors hover:bg-slate-200"
+              aria-label="Close modal"
             >
               <svg
                 className="w-5 h-5 text-gray-500"

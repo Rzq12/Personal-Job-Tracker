@@ -144,6 +144,8 @@ export default function Sidebar() {
             onClick={() => setMobileOpen((prev) => !prev)}
             className="rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm"
             aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation-drawer"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -176,11 +178,28 @@ export default function Sidebar() {
           className={`absolute inset-0 bg-slate-900/35 transition-opacity duration-200 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
         />
         <aside
+          id="mobile-navigation-drawer"
           className={`absolute left-0 top-0 h-full w-72 bg-slate-50 shadow-2xl transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
         >
-          <div className="border-b border-slate-200 p-4">
-            <p className="text-base font-semibold text-slate-900">Navigation</p>
-            <p className="text-xs text-slate-500">Quick access menu</p>
+          <div className="flex items-center justify-between border-b border-slate-200 p-4">
+            <div>
+              <p className="text-base font-semibold text-slate-900">Navigation</p>
+              <p className="text-xs text-slate-500">Quick access menu</p>
+            </div>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="rounded-lg border border-slate-200 bg-white p-2 text-slate-600"
+              aria-label="Close menu"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
           {navList}
           {logoutButton}
