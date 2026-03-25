@@ -2,16 +2,16 @@ import Sidebar from '../components/Sidebar';
 
 export function Stats() {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100/60">
       <Sidebar />
 
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 md:ml-72 md:pt-0">
+        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
           <h1 className="text-xl font-bold text-gray-900">Statistics & Analytics</h1>
           <p className="text-sm text-gray-500">Visualize your job search progress</p>
         </header>
 
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           <div className="max-w-6xl mx-auto">
             {/* Coming Soon Message */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center mb-8">

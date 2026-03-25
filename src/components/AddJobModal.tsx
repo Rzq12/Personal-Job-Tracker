@@ -76,27 +76,33 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={initialData ? 'Edit job modal' : 'Add new job modal'}
+    >
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${isVisible ? 'opacity-50' : 'opacity-0'}`}
+        className={`absolute inset-0 bg-slate-900 transition-opacity duration-300 ${isVisible ? 'opacity-45' : 'opacity-0'}`}
         onClick={handleClose}
       />
 
       {/* Modal - Full screen on mobile, centered on desktop */}
       <div
-        className={`relative bg-white rounded-lg sm:rounded-xl shadow-xl w-full sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden 
+        className={`relative w-full max-h-[95vh] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-2xl 
           transform transition-all duration-300 ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+        <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50/70 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">
               {initialData ? 'Edit Job' : 'Add a New Job'}
             </h2>
             <button
               onClick={handleClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation"
+              className="touch-manipulation rounded-full p-2 transition-colors hover:bg-slate-200"
+              aria-label="Close modal"
             >
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -132,7 +138,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     required
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     placeholder="e.g., Software Engineer"
                   />
                 </div>
@@ -145,7 +151,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     required
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     placeholder="e.g., Acme Corp"
                   />
                 </div>
@@ -161,7 +167,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     type="text"
                     value={formData.location || ''}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     placeholder="e.g., Remote, Jakarta"
                   />
                 </div>
@@ -174,7 +180,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value as JobStatus })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   >
                     {statuses.map((status) => (
                       <option key={status} value={status}>
@@ -200,7 +206,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                         minSalary: e.target.value ? parseInt(e.target.value) : null,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     placeholder="0"
                   />
                 </div>
@@ -217,7 +223,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                         maxSalary: e.target.value ? parseInt(e.target.value) : null,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     placeholder="0"
                   />
                 </div>
@@ -233,7 +239,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     type="date"
                     value={formData.dateSaved || ''}
                     onChange={(e) => setFormData({ ...formData, dateSaved: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                 </div>
                 <div>
@@ -244,7 +250,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     type="date"
                     value={formData.deadline || ''}
                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value || null })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                 </div>
               </div>
@@ -260,7 +266,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     onChange={(e) =>
                       setFormData({ ...formData, dateApplied: e.target.value || null })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                 </div>
                 <div>
@@ -297,7 +303,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                   type="url"
                   value={formData.link || ''}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   placeholder="https://..."
                 />
               </div>
@@ -311,7 +317,7 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                   value={formData.jobDescription || ''}
                   onChange={(e) => setFormData({ ...formData, jobDescription: e.target.value })}
                   rows={4}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                  className="w-full resize-none rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   placeholder="Paste the job description here..."
                 />
               </div>

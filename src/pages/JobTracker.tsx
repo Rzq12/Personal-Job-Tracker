@@ -257,18 +257,33 @@ export default function JobTracker() {
     return '$' + amount.toLocaleString();
   };
 
+  const getStatusBadgeStyle = (status: string) => {
+    const map: Record<string, string> = {
+      Bookmarked: 'bg-slate-100 text-slate-700',
+      Applying: 'bg-sky-100 text-sky-700',
+      Applied: 'bg-blue-100 text-blue-700',
+      Interviewing: 'bg-amber-100 text-amber-700',
+      Negotiating: 'bg-fuchsia-100 text-fuchsia-700',
+      Accepted: 'bg-emerald-100 text-emerald-700',
+      'I Withdrew': 'bg-zinc-200 text-zinc-700',
+      'Not Selected': 'bg-rose-100 text-rose-700',
+      'No Response': 'bg-violet-100 text-violet-700',
+    };
+    return map[status] || 'bg-slate-100 text-slate-700';
+  };
+
   const visibleColumns = columns.filter((col) => col.visible);
 
   if (error) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-100/60">
         <Sidebar />
-        <div className="flex-1 ml-64 flex items-center justify-center">
+        <div className="flex min-h-screen flex-1 items-center justify-center pt-16 md:ml-72 md:pt-0">
           <div className="text-center">
             <p className="text-red-500 mb-4">Failed to load jobs</p>
             <button
               onClick={() => queryClient.invalidateQueries({ queryKey: ['jobs'] })}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+              className="rounded-xl bg-cyan-600 px-4 py-2 font-medium text-white transition hover:bg-cyan-700"
             >
               Retry
             </button>
@@ -279,14 +294,14 @@ export default function JobTracker() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100/60">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 md:ml-72 md:pt-0">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 sm:py-4 md:top-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-gray-900">Job List</h1>
@@ -296,12 +311,12 @@ export default function JobTracker() {
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-auto">
+        <div className="flex flex-1 flex-col overflow-auto lg:flex-row">
           <div
             className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
           >
             {/* Pipeline Status Bar */}
-            <div className="p-3 sm:p-4 lg:p-6 pb-0">
+            <div className="p-3 pb-0 sm:p-4 sm:pb-0 lg:p-6 lg:pb-0">
               <PipelineStatusBar
                 counts={pipelineCounts}
                 onStatusClick={handlePipelineClick}
@@ -310,7 +325,7 @@ export default function JobTracker() {
             </div>
 
             {/* Toolbar */}
-            <div className="p-3 sm:p-4 lg:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex flex-col items-start justify-between gap-3 p-3 sm:flex-row sm:items-center sm:p-4 lg:p-6">
               <div className="flex items-center gap-2 sm:gap-4 flex-wrap w-full sm:w-auto">
                 {selectedJobs.length > 0 ? (
                   <>
@@ -331,6 +346,9 @@ export default function JobTracker() {
                       <button
                         onClick={() => setBulkStatusOpen(!bulkStatusOpen)}
                         className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        aria-expanded={bulkStatusOpen}
+                        aria-haspopup="menu"
+                        aria-label="Open bulk status menu"
                       >
                         <svg
                           className="w-4 h-4"
@@ -431,6 +449,7 @@ export default function JobTracker() {
                 <button
                   onClick={() => setIsAddModalOpen(true)}
                   className="px-3 sm:px-4 py-2 bg-teal-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-teal-700 flex items-center gap-2 whitespace-nowrap"
+                  aria-label="Add new job"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -460,8 +479,108 @@ export default function JobTracker() {
                         {group} ({groupJobs.length})
                       </h3>
                     )}
-                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                      <div className="overflow-x-auto">
+                    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                      <div className="space-y-3 p-3 md:hidden">
+                        {groupJobs.length > 0 &&
+                          groupJobs.map((job) => (
+                            <article
+                              key={`card-${job.id}`}
+                              onClick={() =>
+                                setSelectedJob(selectedJob?.id === job.id ? null : job)
+                              }
+                              className={`rounded-xl border p-3 transition ${
+                                selectedJob?.id === job.id
+                                  ? 'border-cyan-300 bg-cyan-50/60'
+                                  : 'border-slate-200 bg-white hover:border-slate-300'
+                              }`}
+                            >
+                              <div className="mb-2 flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <h3 className="truncate text-sm font-semibold text-slate-900">
+                                    {job.position}
+                                  </h3>
+                                  <p className="truncate text-xs text-slate-500">{job.company}</p>
+                                </div>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedJobs.includes(job.id)}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    handleSelectJob(job.id, e.target.checked);
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  aria-label={`Select job ${job.position} at ${job.company}`}
+                                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-cyan-600"
+                                />
+                              </div>
+
+                              <div className="mb-2 flex items-center justify-between gap-2">
+                                <span
+                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusBadgeStyle(job.status)}`}
+                                >
+                                  {job.status}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  Saved {formatDate(job.dateSaved)}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                                    Location
+                                  </p>
+                                  <p className="truncate">{job.location || 'N/A'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                                    Salary
+                                  </p>
+                                  <p>{`${formatSalary(job.minSalary)} - ${formatSalary(job.maxSalary)}`}</p>
+                                </div>
+                              </div>
+
+                              <div
+                                className="mt-3 grid grid-cols-2 gap-2"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <StatusDropdown
+                                  value={job.status}
+                                  onChange={(status) =>
+                                    updateMutation.mutate({ id: job.id, data: { status } })
+                                  }
+                                />
+                                <StarRating
+                                  rating={job.excitement}
+                                  onChange={(rating) =>
+                                    updateMutation.mutate({
+                                      id: job.id,
+                                      data: { excitement: rating },
+                                    })
+                                  }
+                                  size="sm"
+                                />
+                              </div>
+                            </article>
+                          ))}
+
+                        {groupJobs.length === 0 && (
+                          <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+                            <p className="text-sm font-medium text-slate-700">No jobs found</p>
+                            <p className="mt-1 text-xs text-slate-500">
+                              Try another filter or add your first job.
+                            </p>
+                            <button
+                              onClick={() => setIsAddModalOpen(true)}
+                              className="mt-3 inline-flex rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-semibold text-white"
+                            >
+                              Add Job
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="hidden overflow-x-auto md:block">
                         <table className="w-full min-w-[640px]">
                           <thead>
                             <tr className="bg-gray-50 border-b border-gray-200">

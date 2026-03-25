@@ -81,17 +81,17 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100/60">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 overflow-auto">
+      <div className="min-h-screen pt-16 md:ml-72 md:pt-0">
         {/* Header */}
         <DashboardHeader stats={stats} />
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8">
           {/* Quick Actions */}
           <QuickActions onAddJob={() => setIsAddModalOpen(true)} onExport={handleExport} />
 

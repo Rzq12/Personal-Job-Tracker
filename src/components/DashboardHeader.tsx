@@ -90,28 +90,35 @@ export default function DashboardHeader({ stats }: DashboardHeaderProps) {
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 p-6">
+    <div className="border-b border-slate-200 bg-white/90 p-4 backdrop-blur sm:p-6 lg:p-8">
       {/* Greeting */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
+          Weekly Snapshot
+        </p>
+        <h1 className="text-2xl font-bold leading-tight text-slate-900 sm:text-3xl">
           {greeting}, {userName}! 👋
         </h1>
-        <p className="text-gray-500 mt-1">Here's what's happening with your job applications</p>
+        <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">
+          Here is a concise summary of your job hunt momentum and where to focus next.
+        </p>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {statCards.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-200"
+            className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {stat.label}
+                </p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">{stat.value}</p>
               </div>
-              <div className={`${stat.color} p-3 rounded-lg`}>{stat.icon}</div>
+              <div className={`${stat.color} rounded-xl p-3 shadow-inner`}>{stat.icon}</div>
             </div>
           </div>
         ))}

@@ -5,16 +5,16 @@ interface QuickActionsProps {
 
 export default function QuickActions({ onAddJob, onExport }: QuickActionsProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 className="mb-4 text-lg font-semibold text-slate-900">Quick Actions</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Add Job Button */}
         <button
           onClick={onAddJob}
-          className="group relative overflow-hidden bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+          className="group rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-600 to-sky-600 p-6 text-white shadow-md shadow-cyan-700/30 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.99]"
         >
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 ring-2 ring-white/20">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -24,9 +24,9 @@ export default function QuickActions({ onAddJob, onExport }: QuickActionsProps) 
                 />
               </svg>
             </div>
-            <div className="text-center">
+            <div>
               <p className="font-semibold text-lg">Add New Job</p>
-              <p className="text-sm text-teal-100">Track a new application</p>
+              <p className="text-sm text-cyan-100">Track a new opportunity in seconds</p>
             </div>
           </div>
         </button>
@@ -34,10 +34,10 @@ export default function QuickActions({ onAddJob, onExport }: QuickActionsProps) 
         {/* Export Button */}
         <button
           onClick={onExport}
-          className="group relative overflow-hidden bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+          className="group rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-800 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md active:scale-[0.99]"
         >
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-slate-700">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -47,9 +47,9 @@ export default function QuickActions({ onAddJob, onExport }: QuickActionsProps) 
                 />
               </svg>
             </div>
-            <div className="text-center">
+            <div>
               <p className="font-semibold text-lg">Export to Excel</p>
-              <p className="text-sm text-indigo-100">Download your data</p>
+              <p className="text-sm text-slate-500">Download report for backup or sharing</p>
             </div>
           </div>
         </button>
