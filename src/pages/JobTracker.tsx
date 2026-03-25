@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import type { DragEvent } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import type { DragEvent, TouchEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
@@ -65,6 +65,11 @@ export default function JobTracker() {
   const [searchQuery, setSearchQuery] = useState(initialSearchParam);
   const [draggingJobId, setDraggingJobId] = useState<number | null>(null);
   const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+  const [touchDragging, setTouchDragging] = useState(false);
+  const [touchDragJobId, setTouchDragJobId] = useState<number | null>(null);
+  const [touchDropStatus, setTouchDropStatus] = useState<string | null>(null);
+  const boardColumnRefs = useRef<Record<string, HTMLElement | null>>({});
+  const touchStartPoint = useRef<{ x: number; y: number } | null>(null);
 
   // Fetch jobs
   const {
@@ -291,6 +296,21 @@ export default function JobTracker() {
     setDragOverStatus((current) => (current === status ? null : current));
   };
 
+  const moveJobToStatus = (jobId: number, status: string) => {
+    const movedJob = jobs.find((job) => job.id === jobId);
+    if (!movedJob || movedJob.status === status) return;
+    updateMutation.mutate({ id: movedJob.id, data: { status: status as JobInput['status'] } });
+  };
+
+  const resetBoardDragState = () => {
+    setDraggingJobId(null);
+    setDragOverStatus(null);
+    setTouchDragging(false);
+    setTouchDragJobId(null);
+    setTouchDropStatus(null);
+    touchStartPoint.current = null;
+  };
+
   const handleBoardDrop = (status: string) => (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
 
@@ -298,15 +318,77 @@ export default function JobTracker() {
     const movedJobId =
       Number.isFinite(idFromTransfer) && idFromTransfer > 0 ? idFromTransfer : draggingJobId;
 
-    setDragOverStatus(null);
-    setDraggingJobId(null);
+    resetBoardDragState();
 
     if (!movedJobId) return;
 
-    const movedJob = jobs.find((job) => job.id === movedJobId);
-    if (!movedJob || movedJob.status === status) return;
+    moveJobToStatus(movedJobId, status);
+  };
 
-    updateMutation.mutate({ id: movedJob.id, data: { status: status as JobInput['status'] } });
+  const handleBoardTouchStart = (job: Job) => (event: TouchEvent<HTMLButtonElement>) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    touchStartPoint.current = { x: touch.clientX, y: touch.clientY };
+    setTouchDragJobId(job.id);
+    setDraggingJobId(job.id);
+    setTouchDragging(false);
+    setTouchDropStatus(null);
+  };
+
+  const handleBoardTouchMove = (event: TouchEvent<HTMLButtonElement>) => {
+    if (!touchDragJobId) return;
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const start = touchStartPoint.current;
+    if (start) {
+      const movedDistance = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
+      if (!touchDragging && movedDistance > 8) {
+        setTouchDragging(true);
+      }
+    }
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
+    let hoveredStatus: string | null = null;
+    for (const status of PIPELINE_STATUSES) {
+      const el = boardColumnRefs.current[status];
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      const isInside =
+        touch.clientX >= rect.left &&
+        touch.clientX <= rect.right &&
+        touch.clientY >= rect.top &&
+        touch.clientY <= rect.bottom;
+
+      if (isInside) {
+        hoveredStatus = status;
+        break;
+      }
+    }
+
+    setTouchDropStatus(hoveredStatus);
+    setDragOverStatus(hoveredStatus);
+  };
+
+  const handleBoardTouchEnd = () => {
+    if (!touchDragJobId) {
+      resetBoardDragState();
+      return;
+    }
+
+    if (touchDragging && touchDropStatus) {
+      moveJobToStatus(touchDragJobId, touchDropStatus);
+    }
+
+    resetBoardDragState();
+  };
+
+  const handleBoardTouchCancel = () => {
+    resetBoardDragState();
   };
 
   // Bulk action handlers
@@ -899,6 +981,9 @@ export default function JobTracker() {
                             return (
                               <section
                                 key={status}
+                                ref={(el) => {
+                                  boardColumnRefs.current[status] = el;
+                                }}
                                 onDragOver={handleBoardDragOver(status)}
                                 onDragLeave={handleBoardDragLeave(status)}
                                 onDrop={handleBoardDrop(status)}
@@ -923,7 +1008,14 @@ export default function JobTracker() {
                                         draggable
                                         onDragStart={handleBoardDragStart(job)}
                                         onDragEnd={handleBoardDragEnd}
-                                        onClick={() => handleJobOpen(job)}
+                                        onTouchStart={handleBoardTouchStart(job)}
+                                        onTouchMove={handleBoardTouchMove}
+                                        onTouchEnd={handleBoardTouchEnd}
+                                        onTouchCancel={handleBoardTouchCancel}
+                                        onClick={() => {
+                                          if (touchDragging || draggingJobId === job.id) return;
+                                          handleJobOpen(job);
+                                        }}
                                         className={`w-full rounded-lg border border-slate-200 bg-white p-3 text-left hover:border-teal-300 hover:shadow-sm transition active:cursor-grabbing ${
                                           draggingJobId === job.id
                                             ? 'opacity-60 cursor-grabbing'
