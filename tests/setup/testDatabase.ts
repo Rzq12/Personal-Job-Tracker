@@ -57,7 +57,9 @@ const applyJobFilter = (jobs: TestJob[], where?: any): TestJob[] => {
           return job.company.toLowerCase().includes(String(clause.company.contains).toLowerCase());
         }
         if (clause.position?.contains) {
-          return job.position.toLowerCase().includes(String(clause.position.contains).toLowerCase());
+          return job.position
+            .toLowerCase()
+            .includes(String(clause.position.contains).toLowerCase());
         }
         return false;
       });

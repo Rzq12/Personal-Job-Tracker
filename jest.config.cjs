@@ -18,10 +18,7 @@ module.exports = {
       },
     ],
   },
-  collectCoverageFrom: [
-    'api/**/*.ts',
-    '!api/lib/prisma.ts',
-  ],
+  collectCoverageFrom: ['api/**/*.ts', '!api/lib/prisma.ts'],
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   coverageThreshold: {

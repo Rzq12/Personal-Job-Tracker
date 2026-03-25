@@ -2,7 +2,12 @@ import type { VercelResponse } from '@vercel/node';
 import exportHandler from '../../api/jobs/export';
 import { generateAccessToken } from '../../api/lib/auth';
 import { createMockRequest, createMockResponse } from '../utils/http';
-import { createTestJob, createTestUser, prismaMock, resetTestDatabase } from '../setup/testDatabase';
+import {
+  createTestJob,
+  createTestUser,
+  prismaMock,
+  resetTestDatabase,
+} from '../setup/testDatabase';
 
 jest.mock('../../api/lib/prisma', () => ({
   __esModule: true,
