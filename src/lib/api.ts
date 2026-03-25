@@ -109,7 +109,7 @@ class ApiClient {
   }
 
   async getJob(id: number): Promise<ApiResponse<Job>> {
-    return this.request<ApiResponse<Job>>(`/jobs/${id}`);
+    return this.request<ApiResponse<Job>>(`/jobs?id=${id}`);
   }
 
   async createJob(data: JobInput): Promise<ApiResponse<Job>> {
@@ -122,7 +122,7 @@ class ApiClient {
   async updateJob(id: number, data: Partial<JobInput>): Promise<ApiResponse<Job>> {
     console.log(`[API] Updating job ${id} with data:`, data);
     try {
-      const result = await this.request<ApiResponse<Job>>(`/jobs/${id}`, {
+      const result = await this.request<ApiResponse<Job>>(`/jobs?id=${id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
       });
@@ -137,7 +137,7 @@ class ApiClient {
   async deleteJob(id: number): Promise<ApiResponse<{ message: string }>> {
     console.log(`[API] Deleting job ${id}`);
     try {
-      const result = await this.request<ApiResponse<{ message: string }>>(`/jobs/${id}`, {
+      const result = await this.request<ApiResponse<{ message: string }>>(`/jobs?id=${id}`, {
         method: 'DELETE',
       });
       console.log(`[API] Delete job ${id} successful:`, result);
