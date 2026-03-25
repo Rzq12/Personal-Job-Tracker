@@ -1,6 +1,9 @@
 import type { VercelResponse } from '@vercel/node';
 import { authMiddleware, type AuthRequest } from '../lib/authMiddleware';
 import { isDemoMode, getDemoJobs, getAllDemoJobs, createDemoJob } from '../lib/demo-data';
+import jobByIdHandlerModule from './[id]';
+
+const jobByIdHandler = (jobByIdHandlerModule as any).default || jobByIdHandlerModule;
 
 const getPrisma = async () => {
   if (isDemoMode()) return null;
@@ -10,11 +13,20 @@ const getPrisma = async () => {
 
 async function handler(req: AuthRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Production compatibility: some deployments may not resolve /api/jobs/:id correctly.
+  // Support by-id operations through /api/jobs?id=:id by delegating to the existing handler.
+  const queryId = typeof req.query.id === 'string' ? req.query.id : undefined;
+  const hasNumericId = Boolean(queryId && /^\d+$/.test(queryId));
+
+  if (hasNumericId && ['GET', 'PUT', 'DELETE'].includes(req.method || '')) {
+    return jobByIdHandler(req, res);
   }
 
   try {
