@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 
 export default function Sidebar() {
   const { logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const menuItems = [
     {
@@ -83,44 +85,19 @@ export default function Sidebar() {
     },
   ];
 
-  return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen fixed left-0 top-0">
-      {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">Job Tracker</h1>
-            <p className="text-xs text-gray-500">Track your career</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu Items */}
-      <nav className="flex-1 p-4 space-y-1">
+  const navList = (
+    <nav className="flex-1 p-3">
+      <div className="space-y-1.5 rounded-2xl border border-slate-200/80 bg-white p-2 shadow-sm">
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={() => setMobileOpen(false)}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+              `flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-teal-50 text-teal-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-600/30'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`
             }
           >
@@ -128,25 +105,87 @@ export default function Sidebar() {
             <span>{item.name}</span>
           </NavLink>
         ))}
-      </nav>
-
-      {/* Logout Button */}
-      <div className="p-4 border-t border-gray-200">
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
-          <span>Logout</span>
-        </button>
       </div>
+    </nav>
+  );
+
+  const logoutButton = (
+    <div className="p-3 pt-0">
+      <button
+        onClick={logout}
+        className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+      >
+        Logout
+      </button>
     </div>
+  );
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur md:hidden">
+        <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-600 text-white shadow-md shadow-cyan-600/30">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Job Tracker</p>
+              <p className="text-xs text-slate-500">Career dashboard</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setMobileOpen((prev) => !prev)}
+            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm"
+            aria-label="Open menu"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-72 border-r border-slate-200/80 bg-slate-50/90 backdrop-blur md:flex md:flex-col">
+        <div className="p-5 pb-4">
+          <div className="rounded-2xl bg-gradient-to-br from-cyan-700 to-sky-600 p-4 text-white shadow-lg shadow-cyan-700/30">
+            <p className="text-lg font-semibold">Job Tracker</p>
+            <p className="text-xs text-cyan-100">Track your career with focus</p>
+          </div>
+        </div>
+        {navList}
+        {logoutButton}
+      </aside>
+
+      <div
+        className={`fixed inset-0 z-50 md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      >
+        <div
+          onClick={() => setMobileOpen(false)}
+          className={`absolute inset-0 bg-slate-900/35 transition-opacity duration-200 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
+        />
+        <aside
+          className={`absolute left-0 top-0 h-full w-72 bg-slate-50 shadow-2xl transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        >
+          <div className="border-b border-slate-200 p-4">
+            <p className="text-base font-semibold text-slate-900">Navigation</p>
+            <p className="text-xs text-slate-500">Quick access menu</p>
+          </div>
+          {navList}
+          {logoutButton}
+        </aside>
+      </div>
+    </>
   );
 }

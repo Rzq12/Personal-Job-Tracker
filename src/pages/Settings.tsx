@@ -77,19 +77,19 @@ export function Settings() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100/60">
       <Sidebar />
 
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 md:ml-72 md:pt-0">
+        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
           <h1 className="text-xl font-bold text-gray-900">Settings</h1>
           <p className="text-sm text-gray-500">Manage your account and preferences</p>
         </header>
 
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
             {/* User Profile Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
 
               <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -140,7 +140,7 @@ export function Settings() {
             </div>
 
             {/* Preferences Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Preferences</h2>
 
               <div className="space-y-4">
@@ -208,7 +208,7 @@ export function Settings() {
             </div>
 
             {/* Security Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Security</h2>
 
               <form onSubmit={handleChangePassword} className="space-y-4">

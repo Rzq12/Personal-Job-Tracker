@@ -261,14 +261,14 @@ export default function JobTracker() {
 
   if (error) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-100/60">
         <Sidebar />
-        <div className="flex-1 ml-64 flex items-center justify-center">
+        <div className="flex min-h-screen flex-1 items-center justify-center pt-16 md:ml-72 md:pt-0">
           <div className="text-center">
             <p className="text-red-500 mb-4">Failed to load jobs</p>
             <button
               onClick={() => queryClient.invalidateQueries({ queryKey: ['jobs'] })}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+              className="rounded-xl bg-cyan-600 px-4 py-2 font-medium text-white transition hover:bg-cyan-700"
             >
               Retry
             </button>
@@ -279,14 +279,14 @@ export default function JobTracker() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-100/60">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 flex flex-col overflow-hidden">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 md:ml-72 md:pt-0">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 sm:py-4 md:top-0">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-gray-900">Job List</h1>
@@ -296,12 +296,12 @@ export default function JobTracker() {
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-auto">
+        <div className="flex flex-1 flex-col overflow-auto lg:flex-row">
           <div
             className={`flex-1 flex flex-col transition-all duration-300 ${selectedJob ? 'lg:mr-96' : ''}`}
           >
             {/* Pipeline Status Bar */}
-            <div className="p-3 sm:p-4 lg:p-6 pb-0">
+            <div className="p-3 pb-0 sm:p-4 sm:pb-0 lg:p-6 lg:pb-0">
               <PipelineStatusBar
                 counts={pipelineCounts}
                 onStatusClick={handlePipelineClick}
@@ -310,7 +310,7 @@ export default function JobTracker() {
             </div>
 
             {/* Toolbar */}
-            <div className="p-3 sm:p-4 lg:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex flex-col items-start justify-between gap-3 p-3 sm:flex-row sm:items-center sm:p-4 lg:p-6">
               <div className="flex items-center gap-2 sm:gap-4 flex-wrap w-full sm:w-auto">
                 {selectedJobs.length > 0 ? (
                   <>
