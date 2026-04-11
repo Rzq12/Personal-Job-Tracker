@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 
 interface SidebarProps {
@@ -7,8 +7,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ onAddJob }: SidebarProps) {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const menuItems = [

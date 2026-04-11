@@ -1009,11 +1009,25 @@ export default function JobTracker() {
                                   transition: 'all 0.15s ease',
                                 }}
                               >
-                                <div className="mb-3 flex items-center justify-between">
-                                  <h3 className="text-sm font-semibold text-slate-800">{status}</h3>
-                                  <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-600 border border-slate-200">
-                                    {columnJobs.length}
-                                  </span>
+                                <div className="mb-3 flex items-center justify-between px-1">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className="w-2 h-2 rounded-full flex-shrink-0"
+                                      style={{ background: statusDotColors[status] || '#9ca3af' }}
+                                    />
+                                    <h3
+                                      className="text-xs font-extrabold uppercase tracking-tight"
+                                      style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+                                    >
+                                      {status}
+                                    </h3>
+                                    <span
+                                      className="text-xs font-bold px-2 py-0.5 rounded-full"
+                                      style={{ background: '#e6e8ea', color: '#545f73' }}
+                                    >
+                                      {columnJobs.length}
+                                    </span>
+                                  </div>
                                 </div>
 
                                 <div className="space-y-2">

@@ -38,16 +38,6 @@ export default function Register() {
     }
   };
 
-  const inputStyle = {
-    background: '#e0e3e5',
-    color: '#191c1e',
-    border: 'none',
-    borderRadius: '0.5rem',
-    padding: '1rem 1rem 1rem 2.75rem',
-    width: '100%',
-    outline: 'none',
-    transition: 'all 0.2s',
-  };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.currentTarget.style.background = '#ffffff';
