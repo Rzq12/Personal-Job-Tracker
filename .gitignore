@@ -28,5 +28,6 @@ dist-ssr
 .env.production
 .env*.local
 .env.test
+.env.docker
 .agents
 skills-lock.json*

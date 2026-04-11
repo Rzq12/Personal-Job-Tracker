@@ -1,16 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import 'tailwindcss';
 
+/* ============================================
+   CAREER BLUEPRINT DESIGN SYSTEM - MD3 Tokens
+   ============================================ */
 :root {
-  --bg: #f3f6fb;
-  --text: #0f172a;
-  --muted: #64748b;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --brand: #0891b2;
-  --brand-strong: #0e7490;
+  /* Primary - Teal */
+  --primary: #006071;
+  --on-primary: #ffffff;
+  --primary-container: #007b8f;
+  --on-primary-container: #e3f9ff;
+  --primary-fixed: #aaedff;
+  --primary-fixed-dim: #7ad3e9;
+  --on-primary-fixed: #001f26;
+  --on-primary-fixed-variant: #004e5c;
+  --inverse-primary: #7ad3e9;
+
+  /* Secondary - Slate Blue */
+  --secondary: #545f73;
+  --on-secondary: #ffffff;
+  --secondary-container: #d5e0f8;
+  --on-secondary-container: #586377;
+  --secondary-fixed: #d8e3fb;
+  --secondary-fixed-dim: #bcc7de;
+  --on-secondary-fixed: #111c2d;
+  --on-secondary-fixed-variant: #3c475a;
+
+  /* Tertiary - Deep Blue */
+  --tertiary: #005e80;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #0078a3;
+  --on-tertiary-container: #ebf6ff;
+  --tertiary-fixed: #c4e7ff;
+  --tertiary-fixed-dim: #7bd0ff;
+  --on-tertiary-fixed: #001e2c;
+  --on-tertiary-fixed-variant: #004c69;
+
+  /* Error */
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  /* Surface */
+  --surface: #f7f9fb;
+  --surface-dim: #d8dadc;
+  --surface-bright: #f7f9fb;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f2f4f6;
+  --surface-container: #eceef0;
+  --surface-container-high: #e6e8ea;
+  --surface-container-highest: #e0e3e5;
+  --surface-variant: #e0e3e5;
+  --surface-tint: #006879;
+  --inverse-surface: #2d3133;
+  --inverse-on-surface: #eff1f3;
+
+  /* Text */
+  --on-background: #191c1e;
+  --on-surface: #191c1e;
+  --on-surface-variant: #3e484b;
+  --background: #f7f9fb;
+
+  /* Outline */
+  --outline: #6e797c;
+  --outline-variant: #bec8cc;
+
+  /* Gradient */
+  --teal-gradient: linear-gradient(45deg, #006071, #007b8f);
 }
 
+/* ============================================
+   BASE STYLES
+   ============================================ */
 html {
   scroll-behavior: smooth;
 }
@@ -18,55 +81,66 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% -10%, #dff6ff 0%, transparent 35%), var(--bg);
-  color: var(--text);
-  font-family: 'Manrope', sans-serif;
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Sora', 'Manrope', sans-serif;
+h1, h2, h3, h4, h5, h6,
+.font-headline {
+  font-family: 'Manrope', sans-serif;
   letter-spacing: -0.015em;
 }
 
 ::selection {
-  background-color: var(--brand);
-  color: #fff;
+  background-color: var(--primary-fixed);
+  color: var(--on-primary-fixed-variant);
 }
 
+/* ============================================
+   MATERIAL SYMBOLS
+   ============================================ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.material-symbols-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #eaf0f7;
-  border-radius: 999px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b6c4d7;
-  border-radius: 999px;
+  background: var(--surface-container-highest);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8ca0ba;
-}
-
-@media (min-width: 475px) {
-  .xs\:inline {
-    display: inline;
-  }
-
-  .xs\:hidden {
-    display: none;
-  }
+  background: var(--outline-variant);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -78,93 +152,124 @@ h6 {
   scrollbar-width: none;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
+/* ============================================
+   GRADIENTS & GLASS
+   ============================================ */
+.teal-gradient {
+  background: linear-gradient(45deg, #006071, #007b8f);
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.bg-signature-gradient {
+  background: linear-gradient(45deg, #006071 0%, #007b8f 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ============================================
+   SIDEBAR LAYOUT
+   ============================================ */
+.sidebar-layout {
+  margin-left: 16rem; /* 256px = w-64 */
+  transition: margin-left 0.2s ease;
+  min-height: 100vh;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleXIn {
-  from {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  to {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
 }
 
 @keyframes detailEnter {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.995);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(8px) scale(0.995); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.35s ease-out both;
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
 }
 
-.animate-slide-down {
-  animation: slideDown 0.25s ease-out both;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.animate-fade-slide-in {
-  animation: fadeSlideIn 0.28s ease-out both;
+.animate-fade-in       { animation: fadeIn 0.35s ease-out both; }
+.animate-slide-down    { animation: slideDown 0.25s ease-out both; }
+.animate-fade-slide-in { animation: fadeSlideIn 0.28s ease-out both; }
+.animate-scale-x       { animation: scaleXIn 0.22s ease-out both; }
+.animate-detail-enter  { animation: detailEnter 0.3s ease-out both; }
+.animate-ping          { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.animate-spin          { animation: spin 1s linear infinite; }
+
+/* ============================================
+   STATUS BADGE COLORS
+   ============================================ */
+.status-bookmarked  { background: #e0e3e5; color: #3e484b; }
+.status-applying    { background: #d5e0f8; color: #545f73; }
+.status-applied     { background: #e3f9ff; color: #004e5c; }
+.status-interviewing{ background: #c4e7ff; color: #004c69; }
+.status-negotiating { background: #fef3c7; color: #92400e; }
+.status-accepted    { background: #d1fae5; color: #065f46; }
+.status-withdrew    { background: #f3f4f6; color: #6b7280; }
+.status-notselected { background: #ffdad6; color: #93000a; }
+.status-noresponse  { background: #fce7f3; color: #9d174d; }
+.status-archived    { background: #f3f4f6; color: #9ca3af; }
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+  filter: invert(0.3);
 }
 
-.animate-scale-x {
-  animation: scaleXIn 0.22s ease-out both;
+/* ============================================
+   KANBAN SCROLLBAR
+   ============================================ */
+.kanban-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-container-highest) transparent;
 }
 
-.animate-detail-enter {
-  animation: detailEnter 0.3s ease-out both;
+.kanban-scroll::-webkit-scrollbar {
+  height: 6px;
 }
 
-@media (min-width: 768px) {
-  .sidebar-layout-shift {
-    margin-left: 18rem;
-    transition: margin-left 0.2s ease;
-  }
+.kanban-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-  .sidebar-collapsed .sidebar-layout-shift {
-    margin-left: 5rem;
-  }
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background: var(--surface-container-highest);
+  border-radius: 10px;
 }

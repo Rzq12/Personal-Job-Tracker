@@ -1,197 +1,220 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
+import AddJobModal from '../components/AddJobModal';
+import { api } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import type { JobInput } from '../lib/types';
+
+const featureCards = [
+  {
+    icon: 'bar_chart',
+    iconBg: 'rgba(0, 96, 113, 0.08)',
+    iconColor: '#006071',
+    title: 'Application Trends',
+    desc: 'Track your application volume over time with interactive charts',
+    eta: 'Coming Q1 2024',
+  },
+  {
+    icon: 'pie_chart',
+    iconBg: 'rgba(84, 95, 115, 0.08)',
+    iconColor: '#545f73',
+    title: 'Success Rate',
+    desc: 'Visualize your conversion rate from application to offer',
+    eta: 'Coming Q1 2024',
+  },
+  {
+    icon: 'schedule',
+    iconBg: 'rgba(0, 94, 128, 0.08)',
+    iconColor: '#005e80',
+    title: 'Response Time',
+    desc: 'Analyze average time between application stages',
+    eta: 'Coming Q2 2024',
+  },
+  {
+    icon: 'corporate_fare',
+    iconBg: 'rgba(0, 96, 113, 0.08)',
+    iconColor: '#006071',
+    title: 'Top Companies',
+    desc: 'See which companies you\'ve applied to most frequently',
+    eta: 'Coming Q2 2024',
+  },
+  {
+    icon: 'psychology',
+    iconBg: 'rgba(84, 95, 115, 0.08)',
+    iconColor: '#545f73',
+    title: 'Skills Analysis',
+    desc: 'Identify most requested skills across your applications',
+    eta: 'Coming Q3 2024',
+  },
+  {
+    icon: 'summarize',
+    iconBg: 'rgba(0, 94, 128, 0.08)',
+    iconColor: '#005e80',
+    title: 'Monthly Reports',
+    desc: 'Get monthly summaries of your job search activity',
+    eta: 'Coming Q3 2024',
+  },
+];
 
 export function Stats() {
+  const queryClient = useQueryClient();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const { data: jobsData } = useQuery({
+    queryKey: ['jobs'],
+    queryFn: () => api.getJobs({ page: 1, size: 100, archived: false }),
+  });
+
+  const jobs = jobsData?.data || [];
+  const total = jobs.length || 1;
+
+  const statuses = ['Bookmarked', 'Applying', 'Applied', 'Interviewing', 'Negotiating', 'Accepted', 'I Withdrew', 'Not Selected', 'No Response'];
+  const statusCounts = statuses.map((s) => ({
+    status: s,
+    count: jobs.filter((j) => j.status === s).length,
+  }));
+
+  const statusColors: Record<string, string> = {
+    Bookmarked: '#9ca3af', Applying: '#545f73', Applied: '#006071',
+    Interviewing: '#005e80', Negotiating: '#f59e0b', Accepted: '#10b981',
+    'I Withdrew': '#9ca3af', 'Not Selected': '#ba1a1a', 'No Response': '#ec4899',
+  };
+
   return (
-    <div className="min-h-screen bg-slate-100/60">
-      <Sidebar />
+    <div className="min-h-screen" style={{ background: '#f7f9fb' }}>
+      <Sidebar onAddJob={() => setIsAddModalOpen(true)} />
 
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout-shift md:pt-0">
-        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
-          <h1 className="text-xl font-bold text-gray-900">Statistics & Analytics</h1>
-          <p className="text-sm text-gray-500">Visualize your job search progress</p>
-        </header>
+      <div className="sidebar-layout pt-16 md:pt-0">
+        <TopBar title="Analytics" />
 
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto">
-            {/* Coming Soon Message */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center mb-8">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
+        <div className="px-8 py-8 max-w-7xl mx-auto space-y-10">
+          {/* Quick stats from real data */}
+          {jobs.length > 0 && (
+            <section className="space-y-6">
+              <h3
+                className="text-xl font-bold"
+                style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+              >
+                Status Distribution
+              </h3>
+              <div className="p-6 rounded-2xl shadow-sm" style={{ background: '#ffffff' }}>
+                <div className="space-y-4">
+                  {statusCounts.filter(s => s.count > 0).map((s) => (
+                    <div key={s.status} className="flex items-center gap-4">
+                      <div className="w-28 text-sm font-medium truncate" style={{ color: '#545f73' }}>
+                        {s.status}
+                      </div>
+                      <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: '#f2f4f6' }}>
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${(s.count / total) * 100}%`,
+                            background: statusColors[s.status] || '#9ca3af',
+                          }}
+                        />
+                      </div>
+                      <div className="text-sm font-bold w-8 text-right" style={{ color: '#191c1e' }}>
+                        {s.count}
+                      </div>
+                      <div className="text-xs font-medium w-10 text-right" style={{ color: '#6e797c' }}>
+                        {Math.round((s.count / total) * 100)}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            </section>
+          )}
+
+          {/* Hero Coming Soon */}
+          <div
+            className="relative rounded-2xl overflow-hidden p-12 text-white text-center shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #006071 0%, #007b8f 50%, #005e80 100%)' }}
+          >
+            <div className="absolute inset-0 select-none pointer-events-none flex items-center justify-center" style={{ color: 'rgba(255,255,255,0.05)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '300px' }}>insights</span>
+            </div>
+            <div className="relative z-10">
+              <span
+                className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-6"
+                style={{ background: 'rgba(0,120,163,0.3)', backdropFilter: 'blur(8px)' }}
+              >
+                Module In Progress
+              </span>
+              <h2
+                className="text-4xl font-extrabold mb-4"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
                 Advanced Analytics Coming Soon
               </h2>
-              <p className="text-gray-600 mb-6">
-                Detailed charts, trends, and insights are under development.
+              <p className="text-lg mb-8 max-w-lg mx-auto opacity-90" style={{ color: '#aaedff' }}>
+                Detailed charts, trends, and insights are under development. We're architecting a
+                data layer that will transform your job search intelligence.
               </p>
-              <div className="inline-flex items-center gap-2 text-sm text-blue-600">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span className="font-medium">More features coming soon!</span>
-              </div>
-            </div>
-
-            {/* Feature Preview Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-indigo-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Application Trends</h3>
-                <p className="text-sm text-gray-600">
-                  Track your application volume over time with interactive charts
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-pink-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Success Rate</h3>
-                <p className="text-sm text-gray-600">
-                  Visualize your conversion rate from application to offer
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-yellow-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Response Time</h3>
-                <p className="text-sm text-gray-600">
-                  Analyze average time between application stages
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Top Companies</h3>
-                <p className="text-sm text-gray-600">
-                  See which companies you've applied to most frequently
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Skills Analysis</h3>
-                <p className="text-sm text-gray-600">
-                  Identify most requested skills across your applications
-                </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-red-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Monthly Reports</h3>
-                <p className="text-sm text-gray-600">
-                  Get monthly summaries of your job search activity
-                </p>
+              <div className="flex items-center justify-center gap-2 text-sm font-bold" style={{ color: '#7bd0ff' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>bolt</span>
+                More features launching soon!
               </div>
             </div>
           </div>
+
+          {/* Feature Cards */}
+          <section className="space-y-6">
+            <h3
+              className="text-xl font-bold"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+            >
+              What's Coming
+            </h3>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featureCards.map((card) => (
+                <div
+                  key={card.title}
+                  className="p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+                  style={{ background: '#ffffff' }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
+                    style={{ background: card.iconBg, color: card.iconColor }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
+                      {card.icon}
+                    </span>
+                  </div>
+                  <h4
+                    className="font-bold mb-2"
+                    style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+                  >
+                    {card.title}
+                  </h4>
+                  <p className="text-sm mb-4 leading-relaxed" style={{ color: '#3e484b' }}>
+                    {card.desc}
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#006071' }}>
+                    {card.eta}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
+
+      <AddJobModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={async (data: JobInput) => {
+          try {
+            await api.createJob(data);
+            queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            setIsAddModalOpen(false);
+          } catch (error) {
+            console.error('Failed to create job:', error);
+          }
+        }}
+      />
     </div>
   );
 }
