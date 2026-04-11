@@ -84,39 +84,43 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
     >
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-slate-900 transition-opacity duration-300 ${isVisible ? 'opacity-45' : 'opacity-0'}`}
+        className={`absolute inset-0 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}
         onClick={handleClose}
       />
 
-      {/* Modal - Full screen on mobile, centered on desktop */}
+      {/* Modal */}
       <div
-        className={`relative w-full max-h-[95vh] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-2xl 
+        className={`relative w-full max-h-[95vh] overflow-hidden shadow-2xl sm:max-h-[90vh] sm:max-w-2xl 
           transform transition-all duration-300 ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}
+        style={{ background: '#ffffff', borderRadius: '1.5rem' }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50/70 p-4 sm:p-6">
+        <div
+          className="flex-shrink-0 p-6"
+          style={{ borderBottom: '1px solid #e0e3e5', background: '#f7f9fb' }}
+        >
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-              {initialData ? 'Edit Job' : 'Add a New Job'}
-            </h2>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
+              >
+                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>
+                  {initialData ? 'edit' : 'add_circle'}
+                </span>
+              </div>
+              <h2 className="text-lg font-bold" style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}>
+                {initialData ? 'Edit Job' : 'Add New Job'}
+              </h2>
+            </div>
             <button
               onClick={handleClose}
-              className="touch-manipulation rounded-full p-2 transition-colors hover:bg-slate-200"
+              className="p-2 rounded-xl transition-colors"
+              style={{ background: '#e0e3e5', color: '#3e484b' }}
               aria-label="Close modal"
             >
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>close</span>
             </button>
           </div>
         </div>
@@ -138,7 +142,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     required
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                     placeholder="e.g., Software Engineer"
                   />
                 </div>
@@ -151,7 +158,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     required
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                     placeholder="e.g., Acme Corp"
                   />
                 </div>
@@ -167,7 +177,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     type="text"
                     value={formData.location || ''}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                     placeholder="e.g., Remote, Jakarta"
                   />
                 </div>
@@ -180,7 +193,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value as JobStatus })
                     }
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                   >
                     {statuses.map((status) => (
                       <option key={status} value={status}>
@@ -206,7 +222,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                         minSalary: e.target.value ? parseInt(e.target.value) : null,
                       })
                     }
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                     placeholder="0"
                   />
                 </div>
@@ -223,7 +242,10 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
                         maxSalary: e.target.value ? parseInt(e.target.value) : null,
                       })
                     }
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e', border: 'none' }}
+                    onFocus={(e) => { e.currentTarget.style.background='#ffffff'; e.currentTarget.style.boxShadow='0 0 0 2px rgba(0,96,113,0.2)'; }}
+                    onBlur={(e) => { e.currentTarget.style.background='#e0e3e5'; e.currentTarget.style.boxShadow='none'; }}
                     placeholder="0"
                   />
                 </div>
@@ -338,18 +360,23 @@ export default function AddJobModal({ isOpen, onClose, onSubmit, initialData }: 
             </div>
           </div>
 
-          {/* Footer - Sticky at bottom */}
-          <div className="p-4 sm:p-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0 bg-white">
+          {/* Footer */}
+          <div
+            className="p-5 flex flex-col-reverse sm:flex-row justify-end gap-3 flex-shrink-0"
+            style={{ background: '#f7f9fb', borderTop: '1px solid #e0e3e5' }}
+          >
             <button
               type="button"
               onClick={handleClose}
-              className="w-full sm:w-auto px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors touch-manipulation"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold transition-colors touch-manipulation"
+              style={{ background: '#e0e3e5', color: '#3e484b' }}
             >
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
-              className="w-full sm:w-auto px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-all duration-200 touch-manipulation active:scale-95"
+              type="submit"
+              className="w-full sm:w-auto px-6 py-3 text-white rounded-xl text-sm font-bold transition-all duration-200 touch-manipulation active:scale-95 shadow-lg"
+              style={{ background: 'linear-gradient(45deg, #006071, #007b8f)', boxShadow: '0 4px 12px rgba(0,96,113,0.2)' }}
             >
               {initialData ? 'Save Changes' : 'Add Job'}
             </button>

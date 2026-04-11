@@ -1,0 +1,123 @@
+version: '3.9'
+
+services:
+  # ─────────────────────────────────────────
+  # PostgreSQL Database
+  # ─────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: job_tracker_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jobtracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jobtracker_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-jobtracker_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - job_tracker_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jobtracker} -d ${POSTGRES_DB:-jobtracker_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ─────────────────────────────────────────
+  # Backend API (Express + Prisma)
+  # ─────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: job_tracker_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jobtracker}:${POSTGRES_PASSWORD:-jobtracker_pass}@db:5432/${POSTGRES_DB:-jobtracker_db}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_super_secret_refresh_key_change_in_production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - job_tracker_network
+    volumes:
+      - ./prisma:/app/prisma
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/api/index.js
+      "
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ─────────────────────────────────────────
+  # Frontend (Vite + React served by Nginx)
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3001}
+        VITE_APP_TITLE: ${VITE_APP_TITLE:-Digital Architect - Career Blueprint}
+    container_name: job_tracker_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - job_tracker_network
+
+  # ─────────────────────────────────────────
+  # pgAdmin (optional - database management)
+  # ─────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: job_tracker_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@jobtracker.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - job_tracker_network
+    profiles:
+      - tools
+
+# ─────────────────────────────────────────
+# Named Volumes
+# ─────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# ─────────────────────────────────────────
+# Networks
+# ─────────────────────────────────────────
+networks:
+  job_tracker_network:
+    driver: bridge

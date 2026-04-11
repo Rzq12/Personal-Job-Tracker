@@ -458,19 +458,19 @@ export default function JobTracker() {
     return '$' + amount.toLocaleString();
   };
 
-  const getStatusBadgeStyle = (status: string) => {
-    const map: Record<string, string> = {
-      Bookmarked: 'bg-slate-100 text-slate-700',
-      Applying: 'bg-sky-100 text-sky-700',
-      Applied: 'bg-blue-100 text-blue-700',
-      Interviewing: 'bg-amber-100 text-amber-700',
-      Negotiating: 'bg-fuchsia-100 text-fuchsia-700',
-      Accepted: 'bg-emerald-100 text-emerald-700',
-      'I Withdrew': 'bg-zinc-200 text-zinc-700',
-      'Not Selected': 'bg-rose-100 text-rose-700',
-      'No Response': 'bg-violet-100 text-violet-700',
+  const getStatusBadgeStyle = (status: string): React.CSSProperties => {
+    const map: Record<string, { background: string; color: string }> = {
+      Bookmarked:     { background: '#e0e3e5', color: '#3e484b' },
+      Applying:       { background: '#d5e0f8', color: '#545f73' },
+      Applied:        { background: '#e3f9ff', color: '#004e5c' },
+      Interviewing:   { background: '#c4e7ff', color: '#004c69' },
+      Negotiating:    { background: '#fef3c7', color: '#92400e' },
+      Accepted:       { background: '#d1fae5', color: '#065f46' },
+      'I Withdrew':   { background: '#f3f4f6', color: '#6b7280' },
+      'Not Selected': { background: '#ffdad6', color: '#93000a' },
+      'No Response':  { background: '#fce7f3', color: '#9d174d' },
     };
-    return map[status] || 'bg-slate-100 text-slate-700';
+    return map[status] || { background: '#e0e3e5', color: '#3e484b' };
   };
 
   const visibleColumns = columns.filter((col) => col.visible);
@@ -485,14 +485,16 @@ export default function JobTracker() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-100/60">
-        <Sidebar />
-        <div className="flex min-h-screen flex-1 items-center justify-center pt-16 sidebar-layout-shift md:pt-0">
+      <div className="min-h-screen" style={{ background: '#f7f9fb' }}>
+        <Sidebar onAddJob={() => setIsAddModalOpen(true)} />
+        <div className="flex min-h-screen flex-1 items-center justify-center pt-16 sidebar-layout md:pt-0">
           <div className="text-center">
-            <p className="text-red-500 mb-4">Failed to load jobs</p>
+            <span className="material-symbols-outlined text-5xl mb-4 block" style={{ color: '#bec8cc' }}>error</span>
+            <p className="mb-4 font-semibold" style={{ color: '#ba1a1a' }}>Failed to load jobs</p>
             <button
               onClick={() => queryClient.invalidateQueries({ queryKey: ['jobs'] })}
-              className="rounded-xl bg-cyan-600 px-4 py-2 font-medium text-white transition hover:bg-cyan-700"
+              className="rounded-xl px-6 py-3 font-semibold text-white transition"
+              style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
             >
               Retry
             </button>
@@ -503,20 +505,31 @@ export default function JobTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100/60">
+    <div className="min-h-screen" style={{ background: '#f7f9fb' }}>
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar onAddJob={() => setIsAddModalOpen(true)} />
 
       {/* Main Content */}
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout-shift md:pt-0">
-        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6 sm:py-4 md:top-0">
+      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout md:pt-0">
+        <header
+          className="sticky top-16 z-20 px-4 py-4 sm:px-6 md:top-0"
+          style={{ background: '#f7f9fb', borderBottom: '1px solid #e0e3e5' }}
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Tracker Workspace</h1>
-              <p className="text-xs sm:text-sm text-gray-500">{user?.email}</p>
+              <h1
+                className="text-xl font-bold"
+                style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+              >
+                Job Board
+              </h1>
+              <p className="text-xs" style={{ color: '#6e797c' }}>{user?.email}</p>
             </div>
 
-            <div className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+            <div
+              className="hidden md:flex items-center gap-1 p-1 rounded-xl"
+              style={{ background: '#e6e8ea' }}
+            >
               {(['Jobs', 'People', 'Companies'] as TrackerTab[]).map((tab) => (
                 <button
                   key={tab}
@@ -524,15 +537,14 @@ export default function JobTracker() {
                     setActiveTab(tab);
                     setSelectedJobs([]);
                     setPipelineFilter(null);
-                    if (tab !== 'Jobs') {
-                      setSelectedJobId(null);
-                    }
+                    if (tab !== 'Jobs') setSelectedJobId(null);
                   }}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-                    activeTab === tab
-                      ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                  className="rounded-lg px-4 py-1.5 text-xs font-bold transition"
+                  style={{
+                    background: activeTab === tab ? '#ffffff' : 'transparent',
+                    color: activeTab === tab ? '#006071' : '#545f73',
+                    boxShadow: activeTab === tab ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  }}
                 >
                   {tab}
                 </button>
@@ -540,7 +552,7 @@ export default function JobTracker() {
             </div>
           </div>
 
-          <div className="mt-3 flex md:hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-1">
+          <div className="mt-3 flex md:hidden items-center gap-1 p-1 rounded-xl" style={{ background: '#e6e8ea' }}>
             {(['Jobs', 'People', 'Companies'] as TrackerTab[]).map((tab) => (
               <button
                 key={tab}
@@ -548,15 +560,13 @@ export default function JobTracker() {
                   setActiveTab(tab);
                   setSelectedJobs([]);
                   setPipelineFilter(null);
-                  if (tab !== 'Jobs') {
-                    setSelectedJobId(null);
-                  }
+                  if (tab !== 'Jobs') setSelectedJobId(null);
                 }}
-                className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-semibold transition ${
-                  activeTab === tab
-                    ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
-                    : 'text-slate-600'
-                }`}
+                className="flex-1 rounded-lg px-2 py-1.5 text-xs font-bold transition"
+                style={{
+                  background: activeTab === tab ? '#ffffff' : 'transparent',
+                  color: activeTab === tab ? '#006071' : '#545f73',
+                }}
               >
                 {tab}
               </button>
@@ -589,33 +599,37 @@ export default function JobTracker() {
                     />
                   </div>
 
-                  <div className="flex flex-col items-start justify-between gap-3 p-3 sm:flex-row sm:items-center sm:p-4 lg:p-6">
-                    <div className="flex items-center gap-2 sm:gap-4 flex-wrap w-full sm:w-auto">
+                  <div className="flex flex-col items-start justify-between gap-3 p-4 sm:flex-row sm:items-center lg:p-6">
+                    <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
                       {searchOpen ? (
-                        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                        <div
+                          className="flex items-center gap-2 rounded-xl px-3 py-2"
+                          style={{ background: '#e0e3e5' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#6e797c' }}>search</span>
                           <input
                             value={searchQuery}
                             onChange={(event) => setSearchQuery(event.target.value)}
-                            placeholder="Filter jobs"
-                            className="w-44 bg-transparent text-sm outline-none placeholder:text-slate-400"
+                            placeholder="Search applications..."
+                            className="w-44 bg-transparent text-sm outline-none"
+                            style={{ color: '#191c1e' }}
                           />
                           <button
-                            onClick={() => {
-                              setSearchOpen(false);
-                              setSearchQuery('');
-                            }}
-                            className="text-slate-500 hover:text-slate-700"
+                            onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                            style={{ color: '#6e797c' }}
                             aria-label="Close search"
                           >
-                            ✕
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setSearchOpen(true)}
-                          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition"
+                          style={{ background: '#ffffff', color: '#545f73', border: '1px solid rgba(190,200,204,0.3)' }}
                         >
-                          Search
+                          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>search</span>
+                          Search applications...
                         </button>
                       )}
 
@@ -685,28 +699,29 @@ export default function JobTracker() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-end">
-                      <div className="flex items-center rounded-lg border border-slate-200 bg-white p-1">
-                        <button
-                          onClick={() => setViewMode('table')}
-                          className={`rounded-md px-2 py-1 text-xs font-semibold ${
-                            viewMode === 'table'
-                              ? 'bg-teal-600 text-white'
-                              : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Table
-                        </button>
-                        <button
-                          onClick={() => setViewMode('board')}
-                          className={`rounded-md px-2 py-1 text-xs font-semibold ${
-                            viewMode === 'board'
-                              ? 'bg-teal-600 text-white'
-                              : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Board
-                        </button>
+                    <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto justify-end">
+                      <div
+                        className="flex items-center p-1 rounded-xl"
+                        style={{ background: '#e6e8ea' }}
+                      >
+                        {[
+                          { mode: 'board' as ViewMode, icon: 'grid_view', label: 'Board' },
+                          { mode: 'table' as ViewMode, icon: 'table_rows', label: 'Table' },
+                        ].map((v) => (
+                          <button
+                            key={v.mode}
+                            onClick={() => setViewMode(v.mode)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                            style={{
+                              background: viewMode === v.mode ? '#ffffff' : 'transparent',
+                              color: viewMode === v.mode ? '#006071' : '#545f73',
+                              boxShadow: viewMode === v.mode ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                            }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px', fontVariationSettings: viewMode === v.mode ? "'FILL' 1" : "'FILL' 0" }}>{v.icon}</span>
+                            {v.label}
+                          </button>
+                        ))}
                       </div>
 
                       {viewMode === 'table' && (
@@ -722,23 +737,11 @@ export default function JobTracker() {
 
                       <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="px-3 sm:px-4 py-2 bg-teal-700 text-white rounded-lg text-xs sm:text-sm font-semibold hover:bg-teal-800 flex items-center gap-2 whitespace-nowrap"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white whitespace-nowrap shadow-lg transition-all active:scale-95"
+                        style={{ background: 'linear-gradient(45deg, #006071, #007b8f)', boxShadow: '0 4px 12px rgba(0,96,113,0.2)' }}
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        <span className="hidden xs:inline">Add Job</span>
-                        <span className="xs:hidden">Add</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+                        New Job
                       </button>
                     </div>
                   </div>
@@ -746,7 +749,7 @@ export default function JobTracker() {
                   <div className="flex-1 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 overflow-auto">
                     {isLoading ? (
                       <div className="flex items-center justify-center h-64">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#006071' }} />
                       </div>
                     ) : viewMode === 'table' ? (
                       Object.entries(groupedJobs).map(([group, groupJobs]) => (
@@ -756,7 +759,7 @@ export default function JobTracker() {
                               {group} ({groupJobs.length})
                             </h3>
                           )}
-                          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                          <div className="rounded-2xl overflow-hidden shadow-sm" style={{ background: '#ffffff', border: '1px solid #e0e3e5' }}>
                             <div className="space-y-3 p-3 md:hidden">
                               {groupJobs.map((job) => (
                                 <article
@@ -817,12 +820,12 @@ export default function JobTracker() {
                             <div className="hidden overflow-x-auto md:block">
                               <table className="w-full min-w-[640px]">
                                 <thead>
-                                  <tr className="bg-gray-50 border-b border-gray-200">
+                                  <tr style={{ background: '#f2f4f6', borderBottom: '1px solid #e0e3e5' }}>
                                     {visibleColumns.map((col) => (
                                       <th
                                         key={col.key}
-                                        className={`px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
-                                        style={{ width: col.width }}
+                                        className={`px-4 py-4 text-left text-xs font-bold uppercase tracking-wider ${col.sortable ? 'cursor-pointer' : ''}`}
+                                        style={{ color: '#6e797c', width: col.width }}
                                         onClick={() =>
                                           col.sortable &&
                                           col.key !== 'select' &&
@@ -871,8 +874,14 @@ export default function JobTracker() {
                                   {groupJobs.map((job) => (
                                     <tr
                                       key={job.id}
-                                      className={`hover:bg-gray-50 cursor-pointer ${selectedJobId === job.id ? 'bg-teal-50' : ''}`}
+                                      className="cursor-pointer transition-colors"
+                                      style={{
+                                        background: selectedJobId === job.id ? 'rgba(0,96,113,0.05)' : 'transparent',
+                                        borderTop: '1px solid #f2f4f6',
+                                      }}
                                       onClick={() => handleJobOpen(job)}
+                                      onMouseEnter={(e) => { if (selectedJobId !== job.id) e.currentTarget.style.background = 'rgba(242,244,246,0.5)'; }}
+                                      onMouseLeave={(e) => { if (selectedJobId !== job.id) e.currentTarget.style.background = 'transparent'; }}
                                     >
                                       {visibleColumns.map((col) => (
                                         <td
@@ -974,30 +983,51 @@ export default function JobTracker() {
                         </div>
                       ))
                     ) : (
-                      <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm overflow-x-auto">
-                        <div className="grid grid-flow-col auto-cols-[280px] gap-4 min-w-max">
+                      <div className="rounded-2xl shadow-sm overflow-x-auto kanban-scroll p-4" style={{ background: '#ffffff' }}>
+                        <div className="flex gap-6 min-w-max h-full pb-4">
                           {PIPELINE_STATUSES.map((status) => {
                             const columnJobs = jobsByPipeline[status] || [];
+                            const statusDotColors: Record<string,string> = {
+                              Bookmarked: '#9ca3af', Applying: '#545f73', Applied: '#006071',
+                              Interviewing: '#005e80', Negotiating: '#f59e0b',
+                              Accepted: '#10b981', 'I Withdrew': '#9ca3af',
+                              'Not Selected': '#ba1a1a', 'No Response': '#ec4899',
+                            };
                             return (
                               <section
                                 key={status}
-                                ref={(el) => {
-                                  boardColumnRefs.current[status] = el;
-                                }}
+                                ref={(el) => { boardColumnRefs.current[status] = el; }}
                                 onDragOver={handleBoardDragOver(status)}
                                 onDragLeave={handleBoardDragLeave(status)}
                                 onDrop={handleBoardDrop(status)}
-                                className={`rounded-xl border p-3 transition ${
-                                  dragOverStatus === status
-                                    ? 'border-teal-400 bg-teal-50/70 shadow-md'
-                                    : 'border-slate-200 bg-slate-50/80'
-                                }`}
+                                className="w-72 flex flex-col gap-4 flex-shrink-0"
+                                style={{
+                                  background: dragOverStatus === status ? 'rgba(0,96,113,0.04)' : 'transparent',
+                                  border: dragOverStatus === status ? '2px dashed #006071' : '2px solid transparent',
+                                  borderRadius: '1rem',
+                                  padding: dragOverStatus === status ? '8px' : '0',
+                                  transition: 'all 0.15s ease',
+                                }}
                               >
-                                <div className="mb-3 flex items-center justify-between">
-                                  <h3 className="text-sm font-semibold text-slate-800">{status}</h3>
-                                  <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-600 border border-slate-200">
-                                    {columnJobs.length}
-                                  </span>
+                                <div className="mb-3 flex items-center justify-between px-1">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className="w-2 h-2 rounded-full flex-shrink-0"
+                                      style={{ background: statusDotColors[status] || '#9ca3af' }}
+                                    />
+                                    <h3
+                                      className="text-xs font-extrabold uppercase tracking-tight"
+                                      style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+                                    >
+                                      {status}
+                                    </h3>
+                                    <span
+                                      className="text-xs font-bold px-2 py-0.5 rounded-full"
+                                      style={{ background: '#e6e8ea', color: '#545f73' }}
+                                    >
+                                      {columnJobs.length}
+                                    </span>
+                                  </div>
                                 </div>
 
                                 <div className="space-y-2">
@@ -1047,28 +1077,36 @@ export default function JobTracker() {
               ))}
 
             {activeTab !== 'Jobs' && (
-              <div className="flex-1 p-4 sm:p-6 lg:p-8">
-                <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+              <div className="flex-1 p-6 lg:p-8">
+                <div className="mx-auto max-w-2xl rounded-2xl p-10 text-center shadow-sm" style={{ background: '#ffffff' }}>
+                  <div
+                    className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
+                    style={{ background: '#f2f4f6' }}
+                  >
                     {activeTab === 'People' ? '👥' : '🏢'}
                   </div>
-                  <h2 className="text-xl font-semibold text-slate-900">
+                  <h2
+                    className="text-xl font-bold mb-2"
+                    style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+                  >
                     No {activeTab.toLowerCase()} in your tracker yet
                   </h2>
-                  <p className="mt-2 text-sm text-slate-500">
+                  <p className="text-sm mb-8" style={{ color: '#6e797c' }}>
                     Build your workspace like Teal by adding structured data, then use filters,
                     groups, and statuses for better focus.
                   </p>
-                  <div className="mt-6 flex flex-wrap justify-center gap-3">
+                  <div className="flex flex-wrap justify-center gap-3">
                     <button
                       onClick={() => setIsAddModalOpen(true)}
-                      className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+                      className="rounded-xl px-6 py-3 font-semibold text-white"
+                      style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
                     >
                       Start with a Job
                     </button>
                     <button
                       onClick={() => setActiveTab('Jobs')}
-                      className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                      className="rounded-xl px-6 py-3 font-semibold"
+                      style={{ background: '#f2f4f6', color: '#545f73' }}
                     >
                       Back to Jobs
                     </button>

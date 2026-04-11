@@ -14,10 +14,13 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f7f9fb' }}>
+        <div className="text-center space-y-4">
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto"
+            style={{ borderColor: '#006071' }}
+          />
+          <p className="text-sm font-medium" style={{ color: '#6e797c' }}>Loading...</p>
         </div>
       </div>
     );

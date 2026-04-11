@@ -18,23 +18,19 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
 
     setIsLoading(true);
-
     try {
       await register(email, password, name || undefined);
       setSuccess(true);
-      // Wait for animation before navigating
       setTimeout(() => navigate('/'), 500);
     } catch (err: any) {
       setError(err.message || 'Registration failed');
@@ -42,180 +38,226 @@ export default function Register() {
     }
   };
 
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.background = '#ffffff';
+    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0, 96, 113, 0.2)';
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.background = '#e0e3e5';
+    e.currentTarget.style.boxShadow = 'none';
+  };
+
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-300/40 lg:grid-cols-[1.1fr_1fr]">
-        <section className="relative hidden overflow-hidden bg-gradient-to-br from-indigo-700 via-sky-700 to-cyan-700 p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute -right-20 top-20 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
-          <div className="absolute bottom-6 left-2 h-44 w-44 rounded-full bg-indigo-300/20 blur-3xl" />
-          <div className="relative">
-            <p className="mb-3 inline-flex rounded-full border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">
-              New Account
-            </p>
-            <h1 className="max-w-md text-4xl font-bold leading-tight">
-              Build your focused job search workspace.
-            </h1>
-            <p className="mt-4 max-w-md text-cyan-100/90">
-              Organize applications, prepare interviews, and track every opportunity from one clean
-              dashboard.
-            </p>
-          </div>
-          <div className="relative rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur">
-            <p className="text-sm text-cyan-100">Fast onboarding</p>
-            <p className="mt-1 text-2xl font-semibold">Create your account in under a minute.</p>
-          </div>
-        </section>
+    <main
+      className="min-h-screen flex flex-col md:flex-row overflow-hidden"
+      style={{ background: '#f7f9fb' }}
+    >
+      {/* Left Branding Side */}
+      <section
+        className="hidden md:flex md:w-1/2 p-16 flex-col justify-between relative overflow-hidden"
+        style={{ background: 'linear-gradient(45deg, #006071 0%, #007b8f 100%)' }}
+      >
+        <div
+          className="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: '#007b8f', mixBlendMode: 'multiply' }}
+        />
+        <div
+          className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: '#0078a3', mixBlendMode: 'multiply' }}
+        />
 
-        <section className="flex items-center justify-center p-6 sm:p-10">
-          <div className="w-full max-w-md animate-fade-in">
-            <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
-                Get Started
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-slate-900">Create your account</h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Set up your profile and start tracking applications today.
-              </p>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+              <span className="material-symbols-outlined" style={{ color: '#006071', fontSize: '22px' }}>
+                architecture
+              </span>
             </div>
+            <span
+              className="text-2xl font-extrabold text-white tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              Digital Architect
+            </span>
+          </div>
+        </div>
 
-            {success && (
-              <div
-                className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 animate-slide-down"
-                role="status"
-                aria-live="polite"
-              >
-                Account created successfully. Redirecting...
-              </div>
-            )}
+        <div className="relative z-10 max-w-lg">
+          <h1
+            className="text-5xl font-extrabold text-white leading-[1.1] mb-8"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Build your focused job search workspace.
+          </h1>
+          <p className="text-lg opacity-90 leading-relaxed" style={{ color: '#aaedff' }}>
+            Organize applications, prepare for interviews, and track every opportunity from one clean
+            dashboard.
+          </p>
+        </div>
 
-            {error && (
-              <div
-                className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 animate-slide-down"
-                role="alert"
-                aria-live="assertive"
-              >
-                {error}
-              </div>
-            )}
+        <div
+          className="relative z-10 p-8 max-w-md"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '0.75rem',
+          }}
+        >
+          <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#aaedff' }}>
+            Fast Onboarding
+          </p>
+          <p
+            className="text-xl font-bold text-white"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Create your account in under a minute.
+          </p>
+        </div>
+      </section>
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <div>
-                <label htmlFor="name" className="mb-1.5 block text-sm font-semibold text-slate-700">
-                  Name (optional)
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="John Doe"
-                />
-              </div>
+      {/* Right Form Side */}
+      <section
+        className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16"
+        style={{ background: '#f7f9fb' }}
+      >
+        <div className="w-full max-w-md space-y-8 animate-fade-in">
+          {/* Mobile branding */}
+          <div className="md:hidden flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+              style={{ background: '#006071' }}
+            >
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>
+                architecture
+              </span>
+            </div>
+            <span
+              className="text-xl font-extrabold tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+            >
+              Digital Architect
+            </span>
+          </div>
 
-              <div>
+          <div className="space-y-3">
+            <h2
+              className="text-sm font-bold tracking-widest uppercase"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+            >
+              Get Started
+            </h2>
+            <h3
+              className="text-4xl font-extrabold tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+            >
+              Create your account
+            </h3>
+            <p style={{ color: '#3e484b' }}>
+              Set up your profile and start tracking applications today.
+            </p>
+          </div>
+
+          {success && (
+            <div
+              className="px-4 py-3 text-sm rounded-xl animate-slide-down"
+              style={{ background: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7' }}
+            >
+              Account created successfully. Redirecting...
+            </div>
+          )}
+          {error && (
+            <div
+              className="px-4 py-3 text-sm rounded-xl animate-slide-down"
+              style={{ background: '#ffdad6', color: '#93000a', border: '1px solid #fca5a5' }}
+            >
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            {[
+              { id: 'name', label: 'Name (optional)', type: 'text', value: name, setter: setName, placeholder: 'Your full name', icon: 'person', required: false },
+              { id: 'email', label: 'Email Address', type: 'email', value: email, setter: setEmail, placeholder: 'name@architect.com', icon: 'mail', required: true },
+              { id: 'password', label: 'Password', type: 'password', value: password, setter: setPassword, placeholder: '••••••••', icon: 'lock', required: true },
+              { id: 'confirmPassword', label: 'Confirm Password', type: 'password', value: confirmPassword, setter: setConfirmPassword, placeholder: '••••••••', icon: 'lock_reset', required: true },
+            ].map((field) => (
+              <div key={field.id} className="space-y-2">
                 <label
-                  htmlFor="email"
-                  className="mb-1.5 block text-sm font-semibold text-slate-700"
+                  htmlFor={field.id}
+                  className="text-xs font-bold uppercase tracking-wider ml-1 block"
+                  style={{ color: '#3e484b' }}
                 >
-                  Email
+                  {field.label}
                 </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="you@example.com"
-                />
+                <div className="relative">
+                  <span
+                    className="absolute inset-y-0 left-0 pl-4 flex items-center"
+                    style={{ color: '#6e797c' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                      {field.icon}
+                    </span>
+                  </span>
+                  <input
+                    id={field.id}
+                    type={field.type}
+                    required={field.required}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
+                    placeholder={field.placeholder}
+                    className="block w-full pl-11 pr-4 py-4 border-none rounded-xl outline-none transition-all"
+                    style={{ background: '#e0e3e5', color: '#191c1e' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                </div>
+                {field.id === 'password' && (
+                  <p className="text-xs ml-1" style={{ color: '#6e797c' }}>
+                    At least 6 characters
+                  </p>
+                )}
               </div>
+            ))}
 
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-1.5 block text-sm font-semibold text-slate-700"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••••"
-                />
-                <p className="mt-1 text-xs text-slate-500">At least 6 characters</p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="mb-1.5 block text-sm font-semibold text-slate-700"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••••"
-                />
-              </div>
-
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading || success}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full py-4 px-6 text-white font-bold rounded-xl shadow-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{
+                  fontFamily: 'Manrope, sans-serif',
+                  background: 'linear-gradient(45deg, #006071, #007b8f)',
+                  boxShadow: '0 4px 15px rgba(0, 96, 113, 0.2)',
+                }}
               >
                 {isLoading ? (
                   <>
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
                     Creating account...
                   </>
-                ) : success ? (
-                  'Success!'
-                ) : (
-                  'Sign up'
-                )}
+                ) : success ? 'Success!' : 'Create Account'}
               </button>
-            </form>
+            </div>
+          </form>
 
-            <p className="mt-6 text-center text-sm text-slate-600">
-              Already have an account?{' '}
-              <Link
-                to="/login"
-                className="font-semibold text-cyan-700 transition hover:text-cyan-800"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </section>
-      </div>
-    </div>
+          <p className="text-center text-sm" style={{ color: '#3e484b' }}>
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="font-bold hover:underline decoration-2 underline-offset-4"
+              style={{ color: '#006071' }}
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -5,6 +5,7 @@ import { useAuth } from '../lib/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -20,7 +21,6 @@ export default function Login() {
     try {
       await login(email, password);
       setSuccess(true);
-      // Wait for animation before navigating
       setTimeout(() => navigate('/'), 500);
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -29,69 +29,197 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-300/40 lg:grid-cols-[1.1fr_1fr]">
-        <section className="relative hidden overflow-hidden bg-gradient-to-br from-cyan-700 via-sky-700 to-indigo-700 p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute -left-20 top-24 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-indigo-300/20 blur-3xl" />
-          <div className="relative">
-            <p className="mb-3 inline-flex rounded-full border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">
-              Career OS
-            </p>
-            <h1 className="max-w-md text-4xl font-bold leading-tight">
-              Track every opportunity with clarity and confidence.
-            </h1>
-            <p className="mt-4 max-w-md text-cyan-100/90">
-              Keep your applications, status pipeline, and interview momentum in one elegant
-              workflow.
-            </p>
-          </div>
-          <div className="relative space-y-3 rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur">
-            <p className="text-sm text-cyan-100">This week highlight</p>
-            <p className="text-2xl font-semibold">Stay consistent, close more offers.</p>
-          </div>
-        </section>
+    <main
+      className="min-h-screen flex flex-col md:flex-row overflow-hidden"
+      style={{ background: '#f7f9fb' }}
+    >
+      {/* Left Side: Vibrant Branding */}
+      <section
+        className="hidden md:flex md:w-1/2 p-16 flex-col justify-between relative overflow-hidden"
+        style={{ background: 'linear-gradient(45deg, #006071 0%, #007b8f 100%)' }}
+      >
+        {/* Decorative blobs */}
+        <div
+          className="absolute -top-24 -left-24 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: '#007b8f', mixBlendMode: 'multiply' }}
+        />
+        <div
+          className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: '#0078a3', mixBlendMode: 'multiply' }}
+        />
 
-        <section className="flex items-center justify-center p-6 sm:p-10">
-          <div className="w-full max-w-md animate-fade-in">
-            <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
-                Welcome Back
+        {/* Branding */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+              <span className="material-symbols-outlined" style={{ color: '#006071', fontSize: '22px' }}>
+                architecture
+              </span>
+            </div>
+            <span
+              className="text-2xl font-extrabold text-white tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              Digital Architect
+            </span>
+          </div>
+        </div>
+
+        {/* Hero Text */}
+        <div className="relative z-10 max-w-lg">
+          <h1
+            className="text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-8"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Track every opportunity with clarity and confidence.
+          </h1>
+          <p className="text-lg opacity-90 leading-relaxed" style={{ color: '#aaedff' }}>
+            Designed for the modern professional. Organize your career journey with
+            architectural precision and calm.
+          </p>
+        </div>
+
+        {/* Highlight Glassmorphism Card */}
+        <div
+          className="relative z-10 p-8 shadow-2xl max-w-md"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '0.75rem',
+          }}
+        >
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <p
+                className="text-xs font-bold tracking-widest mb-1 uppercase"
+                style={{ color: '#aaedff' }}
+              >
+                This Week Highlight
               </p>
-              <h2 className="mt-2 text-3xl font-bold text-slate-900">Sign in to Job Tracker</h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Continue your application flow and keep progress moving.
+              <h3
+                className="text-xl text-white font-bold"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Progress Dashboard
+              </h3>
+            </div>
+            <span className="material-symbols-outlined text-white opacity-80">trending_up</span>
+          </div>
+          <div className="flex gap-4 items-center">
+            <div className="flex -space-x-3">
+              {['A', 'B', 'C'].map((l, i) => (
+                <div
+                  key={i}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                  style={{
+                    background: i === 2 ? '#007b8f' : `hsl(${190 + i * 20}, 60%, 45%)`,
+                    border: '2px solid rgba(255,255,255,0.2)',
+                  }}
+                >
+                  {l}
+                </div>
+              ))}
+            </div>
+            <div className="h-10 w-px" style={{ background: 'rgba(255,255,255,0.2)' }} />
+            <div>
+              <p className="text-white font-bold text-sm">4 New Interviews</p>
+              <p className="text-xs" style={{ color: '#aaedff' }}>
+                Scheduled for this week
               </p>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {success && (
-              <div
-                className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 animate-slide-down"
-                role="status"
-                aria-live="polite"
+      {/* Right Side: Login Form */}
+      <section
+        className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16"
+        style={{ background: '#f7f9fb' }}
+      >
+        <div className="w-full max-w-md space-y-10 animate-fade-in">
+          {/* Mobile Branding */}
+          <div className="md:hidden flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+              style={{ background: '#006071' }}
+            >
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>
+                architecture
+              </span>
+            </div>
+            <span
+              className="text-xl font-extrabold tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+            >
+              Digital Architect
+            </span>
+          </div>
+
+          {/* Header */}
+          <div className="space-y-3">
+            <h2
+              className="text-sm font-bold tracking-widest uppercase"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+            >
+              Welcome Back
+            </h2>
+            <h3
+              className="text-4xl font-extrabold tracking-tight"
+              style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+            >
+              Sign in to Job Tracker
+            </h3>
+            <p style={{ color: '#3e484b' }}>Keep building your career roadmap.</p>
+          </div>
+
+          {/* Alerts */}
+          {success && (
+            <div
+              className="px-4 py-3 text-sm rounded-xl animate-slide-down"
+              style={{
+                background: '#d1fae5',
+                color: '#065f46',
+                border: '1px solid #6ee7b7',
+              }}
+            >
+              Login successful. Redirecting...
+            </div>
+          )}
+          {error && (
+            <div
+              className="px-4 py-3 text-sm rounded-xl animate-slide-down"
+              style={{
+                background: '#ffdad6',
+                color: '#93000a',
+                border: '1px solid #fca5a5',
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            {/* Email */}
+            <div className="space-y-2">
+              <label
+                className="text-xs font-bold uppercase tracking-wider ml-1"
+                htmlFor="email"
+                style={{ color: '#3e484b' }}
               >
-                Login successful. Redirecting...
-              </div>
-            )}
-
-            {error && (
-              <div
-                className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 animate-slide-down"
-                role="alert"
-                aria-live="assertive"
-              >
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1.5 block text-sm font-semibold text-slate-700"
+                Email Address
+              </label>
+              <div className="relative group">
+                <span
+                  className="absolute inset-y-0 left-0 pl-4 flex items-center transition-colors"
+                  style={{ color: '#6e797c' }}
                 >
-                  Email
-                </label>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    mail
+                  </span>
+                </span>
                 <input
                   id="email"
                   type="email"
@@ -99,38 +227,102 @@ export default function Login() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="you@example.com"
+                  placeholder="name@architect.com"
+                  className="block w-full pl-11 pr-4 py-4 border-none rounded-xl outline-none transition-all"
+                  style={{
+                    background: '#e0e3e5',
+                    color: '#191c1e',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.background = '#ffffff';
+                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0, 96, 113, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.background = '#e0e3e5';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
               </div>
+            </div>
 
-              <div>
+            {/* Password */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center px-1">
                 <label
+                  className="text-xs font-bold uppercase tracking-wider"
                   htmlFor="password"
-                  className="mb-1.5 block text-sm font-semibold text-slate-700"
+                  style={{ color: '#3e484b' }}
                 >
                   Password
                 </label>
+                <a
+                  href="#"
+                  className="text-xs font-bold transition-opacity hover:opacity-80"
+                  style={{ color: '#006071' }}
+                >
+                  Forgot?
+                </a>
+              </div>
+              <div className="relative group">
+                <span
+                  className="absolute inset-y-0 left-0 pl-4 flex items-center"
+                  style={{ color: '#6e797c' }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    lock
+                  </span>
+                </span>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   placeholder="••••••••"
+                  className="block w-full pl-11 pr-12 py-4 border-none rounded-xl outline-none transition-all"
+                  style={{ background: '#e0e3e5', color: '#191c1e' }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.background = '#ffffff';
+                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0, 96, 113, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.background = '#e0e3e5';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center transition-colors"
+                  style={{ color: '#6e797c' }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
               </div>
+            </div>
 
+            {/* Submit */}
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading || success}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full py-4 px-6 text-white font-bold rounded-xl shadow-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{
+                  fontFamily: 'Manrope, sans-serif',
+                  background: 'linear-gradient(45deg, #006071, #007b8f)',
+                  boxShadow: '0 4px 15px rgba(0, 96, 113, 0.2)',
+                }}
+                onMouseEnter={(e) =>
+                  !isLoading && !success && (e.currentTarget.style.transform = 'translateY(-1px)')
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
               >
                 {isLoading ? (
                   <>
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -153,20 +345,39 @@ export default function Login() {
                   'Sign in'
                 )}
               </button>
-            </form>
+            </div>
+          </form>
 
-            <p className="mt-6 text-center text-sm text-slate-600">
-              Don't have an account?{' '}
+          {/* Footer */}
+          <div className="text-center space-y-6">
+            <p className="text-sm" style={{ color: '#3e484b' }}>
+              New to the blueprint?{' '}
               <Link
                 to="/register"
-                className="font-semibold text-cyan-700 transition hover:text-cyan-800"
+                className="font-bold hover:underline decoration-2 underline-offset-4"
+                style={{ color: '#006071' }}
               >
                 Create one
               </Link>
             </p>
           </div>
-        </section>
-      </div>
-    </div>
+
+          {/* Legal */}
+          <div className="text-center">
+            <p className="text-[10px] leading-loose max-w-xs mx-auto" style={{ color: '#6e797c' }}>
+              By signing in, you agree to our{' '}
+              <a href="#" className="underline">
+                Terms of Service
+              </a>{' '}
+              and{' '}
+              <a href="#" className="underline">
+                Privacy Policy
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

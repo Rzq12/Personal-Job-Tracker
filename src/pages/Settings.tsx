@@ -1,11 +1,63 @@
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
 import { useAuth } from '../lib/AuthContext';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import api from '../lib/api';
+import AddJobModal from '../components/AddJobModal';
+import { useQueryClient } from '@tanstack/react-query';
+import type { JobInput } from '../lib/types';
+
+function FormInput({
+  id, label, type = 'text', value, onChange, disabled, placeholder, note,
+}: {
+  id: string; label: string; type?: string; value: string;
+  onChange?: (v: string) => void; disabled?: boolean; placeholder?: string; note?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <label
+        htmlFor={id}
+        className="text-xs font-bold uppercase tracking-wider block"
+        style={{ color: '#3e484b' }}
+      >
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+        disabled={disabled}
+        placeholder={placeholder}
+        className="w-full px-4 py-4 rounded-xl outline-none transition-all"
+        style={{
+          background: disabled ? '#f2f4f6' : '#e0e3e5',
+          color: disabled ? '#9ca3af' : '#191c1e',
+          border: 'none',
+          cursor: disabled ? 'not-allowed' : 'auto',
+        }}
+        onFocus={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.background = '#ffffff';
+            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0, 96, 113, 0.2)';
+          }
+        }}
+        onBlur={(e) => {
+          if (!disabled) {
+            e.currentTarget.style.background = '#e0e3e5';
+            e.currentTarget.style.boxShadow = 'none';
+          }
+        }}
+      />
+      {note && <p className="text-xs" style={{ color: '#6e797c' }}>{note}</p>}
+    </div>
+  );
+}
 
 export function Settings() {
   const { user, setUser } = useAuth();
+  const queryClient = useQueryClient();
   const [name, setName] = useState(user?.name || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -14,6 +66,7 @@ export function Settings() {
   const [passwordMessage, setPasswordMessage] = useState('');
   const [profileError, setProfileError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const updateProfileMutation = useMutation({
     mutationFn: (data: { name: string }) => api.updateProfile(data),
@@ -48,273 +101,228 @@ export function Settings() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setProfileError('Name is required');
-      return;
-    }
+    if (!name.trim()) { setProfileError('Name is required'); return; }
     updateProfileMutation.mutate({ name: name.trim() });
   };
 
   const handleChangePassword = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordError('All fields are required');
-      return;
+      setPasswordError('All fields are required'); return;
     }
-
-    if (newPassword.length < 6) {
-      setPasswordError('New password must be at least 6 characters');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setPasswordError('New passwords do not match');
-      return;
-    }
-
+    if (newPassword.length < 6) { setPasswordError('Min 6 characters'); return; }
+    if (newPassword !== confirmPassword) { setPasswordError('Passwords do not match'); return; }
     changePasswordMutation.mutate({ currentPassword, newPassword });
   };
 
+  const SectionCard = ({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) => (
+    <div className="rounded-2xl shadow-sm p-8" style={{ background: '#ffffff' }}>
+      <div className="flex items-center gap-3 mb-6">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ background: 'rgba(0, 96, 113, 0.08)', color: '#006071' }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>{icon}</span>
+        </div>
+        <h2
+          className="text-lg font-bold"
+          style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+        >
+          {title}
+        </h2>
+      </div>
+      {children}
+    </div>
+  );
+
+  const userInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
+
   return (
-    <div className="min-h-screen bg-slate-100/60">
-      <Sidebar />
+    <div className="min-h-screen" style={{ background: '#f7f9fb' }}>
+      <Sidebar onAddJob={() => setIsAddModalOpen(true)} />
 
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout-shift md:pt-0">
-        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
-          <h1 className="text-xl font-bold text-gray-900">Settings</h1>
-          <p className="text-sm text-gray-500">Manage your account and preferences</p>
-        </header>
+      <div className="sidebar-layout pt-16 md:pt-0">
+        <TopBar title="Settings" />
 
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
-            {/* User Profile Section */}
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
-
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={user?.email || ''}
-                    disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                </div>
-
-                {profileMessage && (
-                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-800">{profileMessage}</p>
-                  </div>
-                )}
-
-                {profileError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-800">{profileError}</p>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={updateProfileMutation.isPending}
-                  className="px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                >
-                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Profile'}
-                </button>
-              </form>
+        <div className="px-8 py-8 max-w-4xl mx-auto space-y-8">
+          {/* Profile avatar card */}
+          <div
+            className="rounded-2xl p-8 relative overflow-hidden shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #006071 0%, #007b8f 100%)' }}
+          >
+            <div className="absolute inset-0 select-none pointer-events-none" style={{ color: 'rgba(255,255,255,0.04)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '300px', position: 'absolute', right: '-40px', bottom: '-60px' }}>person</span>
             </div>
-
-            {/* Preferences Section */}
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Preferences</h2>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Email Notifications</h3>
-                    <p className="text-xs text-gray-500">
-                      Receive email updates about your applications
-                    </p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" disabled />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Interview Reminders</h3>
-                    <p className="text-xs text-gray-500">
-                      Get reminded before scheduled interviews
-                    </p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked disabled />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Weekly Summary</h3>
-                    <p className="text-xs text-gray-500">
-                      Receive a weekly report of your activity
-                    </p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" disabled />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-                  </label>
-                </div>
+            <div className="relative z-10 flex items-center gap-6">
+              <div
+                className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-extrabold text-white shadow-lg"
+                style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)' }}
+              >
+                {userInitial}
               </div>
-
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <svg
-                    className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                  <p className="text-xs text-yellow-800">
-                    These settings are currently disabled. Notification features will be available
-                    in a future update.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Security Section */}
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Security</h2>
-
-              <form onSubmit={handleChangePassword} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Enter current password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm New Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Confirm new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                </div>
-
-                {passwordMessage && (
-                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-800">{passwordMessage}</p>
-                  </div>
-                )}
-
-                {passwordError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-800">{passwordError}</p>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={changePasswordMutation.isPending}
-                  className="px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              <div className="text-white">
+                <h2
+                  className="text-2xl font-extrabold"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
-                  {changePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
-                </button>
-              </form>
-            </div>
-
-            {/* Data Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Data Management</h2>
-
-              <div className="space-y-4">
-                <div className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Export Your Data</h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Download all your job application data
-                    </p>
-                  </div>
-                  <button
-                    disabled
-                    className="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed"
-                  >
-                    Export
-                  </button>
-                </div>
-
-                <div className="flex items-start justify-between p-4 bg-red-50 rounded-lg border border-red-200">
-                  <div>
-                    <h3 className="text-sm font-medium text-red-900">Delete Account</h3>
-                    <p className="text-xs text-red-600 mt-1">
-                      Permanently delete your account and all data
-                    </p>
-                  </div>
-                  <button
-                    disabled
-                    className="px-4 py-2 bg-red-300 text-red-500 rounded-lg text-sm font-medium cursor-not-allowed"
-                  >
-                    Delete
-                  </button>
-                </div>
-
-                <p className="text-xs text-gray-500">Data management features coming soon</p>
+                  {user?.name || 'User'}
+                </h2>
+                <p className="opacity-80 text-sm">{user?.email}</p>
+                <span
+                  className="mt-2 inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.15)' }}
+                >
+                  Account Active
+                </span>
               </div>
             </div>
           </div>
+
+          {/* Profile Info */}
+          <SectionCard title="Profile Information" icon="badge">
+            <form onSubmit={handleUpdateProfile} className="space-y-5">
+              <FormInput id="email" label="Email Address" value={user?.email || ''} disabled note="Email cannot be changed" />
+              <FormInput id="name" label="Full Name" value={name} onChange={setName} placeholder="Your full name" />
+
+              {profileMessage && (
+                <div className="px-4 py-3 rounded-xl text-sm animate-slide-down" style={{ background: '#d1fae5', color: '#065f46' }}>
+                  {profileMessage}
+                </div>
+              )}
+              {profileError && (
+                <div className="px-4 py-3 rounded-xl text-sm animate-slide-down" style={{ background: '#ffdad6', color: '#93000a' }}>
+                  {profileError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={updateProfileMutation.isPending}
+                className="px-6 py-3 rounded-xl text-white font-bold transition-all disabled:opacity-60"
+                style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
+              >
+                {updateProfileMutation.isPending ? 'Saving...' : 'Save Profile'}
+              </button>
+            </form>
+          </SectionCard>
+
+          {/* Preferences */}
+          <SectionCard title="Preferences" icon="tune">
+            <div className="space-y-4">
+              {[
+                { label: 'Email Notifications', desc: 'Receive email updates about your applications', checked: false },
+                { label: 'Interview Reminders', desc: 'Get reminded before scheduled interviews', checked: true },
+                { label: 'Weekly Summary', desc: 'Receive a weekly report of your activity', checked: false },
+              ].map((pref) => (
+                <div
+                  key={pref.label}
+                  className="flex items-center justify-between p-4 rounded-xl"
+                  style={{ background: '#f2f4f6' }}
+                >
+                  <div>
+                    <h3 className="text-sm font-bold" style={{ color: '#191c1e' }}>{pref.label}</h3>
+                    <p className="text-xs" style={{ color: '#6e797c' }}>{pref.desc}</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-not-allowed">
+                    <input type="checkbox" className="sr-only peer" defaultChecked={pref.checked} disabled />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600" />
+                  </label>
+                </div>
+              ))}
+              <p
+                className="text-xs px-1"
+                style={{ color: '#f59e0b', background: '#fef3c7', padding: '8px 12px', borderRadius: '8px' }}
+              >
+                ⚠ Notification features will be available in a future update.
+              </p>
+            </div>
+          </SectionCard>
+
+          {/* Security */}
+          <SectionCard title="Security" icon="shield">
+            <form onSubmit={handleChangePassword} className="space-y-5">
+              <FormInput id="currentPassword" label="Current Password" type="password" value={currentPassword} onChange={setCurrentPassword} placeholder="••••••••" />
+              <FormInput id="newPassword" label="New Password" type="password" value={newPassword} onChange={setNewPassword} placeholder="••••••••" note="At least 6 characters" />
+              <FormInput id="confirmPassword" label="Confirm New Password" type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="••••••••" />
+
+              {passwordMessage && (
+                <div className="px-4 py-3 rounded-xl text-sm animate-slide-down" style={{ background: '#d1fae5', color: '#065f46' }}>
+                  {passwordMessage}
+                </div>
+              )}
+              {passwordError && (
+                <div className="px-4 py-3 rounded-xl text-sm animate-slide-down" style={{ background: '#ffdad6', color: '#93000a' }}>
+                  {passwordError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={changePasswordMutation.isPending}
+                className="px-6 py-3 rounded-xl text-white font-bold transition-all disabled:opacity-60"
+                style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
+              >
+                {changePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
+              </button>
+            </form>
+          </SectionCard>
+
+          {/* Data Management */}
+          <SectionCard title="Data Management" icon="folder">
+            <div className="space-y-4">
+              <div
+                className="flex items-start justify-between p-5 rounded-xl"
+                style={{ background: '#f2f4f6' }}
+              >
+                <div>
+                  <h3 className="text-sm font-bold mb-1" style={{ color: '#191c1e' }}>Export Your Data</h3>
+                  <p className="text-sm" style={{ color: '#6e797c' }}>Download all your job application data as Excel</p>
+                </div>
+                <button
+                  disabled
+                  className="px-4 py-2 rounded-xl text-sm font-bold cursor-not-allowed"
+                  style={{ background: '#e0e3e5', color: '#9ca3af' }}
+                >
+                  Export
+                </button>
+              </div>
+
+              <div
+                className="flex items-start justify-between p-5 rounded-xl"
+                style={{ background: '#ffdad6', border: '1px solid rgba(186,26,26,0.15)' }}
+              >
+                <div>
+                  <h3 className="text-sm font-bold mb-1" style={{ color: '#93000a' }}>Delete Account</h3>
+                  <p className="text-sm" style={{ color: '#c62828' }}>Permanently delete your account and all data</p>
+                </div>
+                <button
+                  disabled
+                  className="px-4 py-2 rounded-xl text-sm font-bold cursor-not-allowed"
+                  style={{ background: 'rgba(186,26,26,0.15)', color: '#ba1a1a' }}
+                >
+                  Delete
+                </button>
+              </div>
+
+              <p className="text-xs" style={{ color: '#6e797c' }}>Data management features coming soon</p>
+            </div>
+          </SectionCard>
         </div>
       </div>
+
+      <AddJobModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={async (data: JobInput) => {
+          try {
+            await api.createJob(data);
+            queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            setIsAddModalOpen(false);
+          } catch (error) {
+            console.error('Failed to create job:', error);
+          }
+        }}
+      />
     </div>
   );
 }

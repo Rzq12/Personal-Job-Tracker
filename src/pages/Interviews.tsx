@@ -1,149 +1,252 @@
 import Sidebar from '../components/Sidebar';
+import TopBar from '../components/TopBar';
+import { useState } from 'react';
+import AddJobModal from '../components/AddJobModal';
+import { api } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import type { JobInput } from '../lib/types';
+
+const features = [
+  {
+    icon: 'schedule',
+    iconBg: 'rgba(0, 96, 113, 0.08)',
+    iconColor: '#006071',
+    title: 'Schedule Tracking',
+    desc: 'Automated sync with your calendar to keep all interview stages organized in one architectural view.',
+    badge: 'Coming Winter',
+    badgeColor: '#006071',
+  },
+  {
+    icon: 'notifications_active',
+    iconBg: 'rgba(0, 94, 128, 0.08)',
+    iconColor: '#005e80',
+    title: 'Reminders',
+    desc: 'Smart alerts for pre-interview prep, follow-up emails, and thank-you notes customized for every role.',
+    badge: 'Q1 2024',
+    badgeColor: '#005e80',
+  },
+  {
+    icon: 'edit_note',
+    iconBg: 'rgba(84, 95, 115, 0.08)',
+    iconColor: '#545f73',
+    title: 'Prep Notes',
+    desc: 'A dedicated workspace for STAR method responses and company research embedded in your tracker.',
+    badge: 'Beta Access',
+    badgeColor: '#545f73',
+  },
+  {
+    icon: 'insights',
+    iconBg: 'rgba(0, 96, 113, 0.08)',
+    iconColor: '#006071',
+    title: 'Analytics',
+    desc: 'Visual data on your conversion rates from initial call to final round offer. Refine your strategy.',
+    badge: 'Waitlist Open',
+    badgeColor: '#006071',
+  },
+];
 
 export function Interviews() {
+  const queryClient = useQueryClient();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-100/60">
-      <Sidebar />
+    <div className="min-h-screen" style={{ background: '#f7f9fb' }}>
+      <Sidebar onAddJob={() => setIsAddModalOpen(true)} />
 
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden pt-16 sidebar-layout-shift md:pt-0">
-        <header className="sticky top-16 z-20 border-b border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:px-6 md:top-0">
-          <h1 className="text-xl font-bold text-gray-900">Interviews</h1>
-          <p className="text-sm text-gray-500">Manage your upcoming interviews</p>
-        </header>
+      <div className="sidebar-layout pt-16 md:pt-0">
+        <TopBar title="Interviews" />
 
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
-            {/* Coming Soon Message */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-teal-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+        <div className="px-8 py-8 max-w-7xl">
+          {/* Hero banner */}
+          <div
+            className="relative w-full rounded-2xl overflow-hidden mb-12 shadow-sm"
+            style={{ aspectRatio: '21/9' }}
+          >
+            {/* Gradient overlay */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(0,96,113,0.92) 0%, transparent 60%)',
+              }}
+            />
+            {/* Background pattern */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, #006071 0%, #007b8f 50%, #0078a3 100%)',
+              }}
+            />
+            {/* Content */}
+            <div className="absolute inset-0 flex items-center px-16">
+              <div className="max-w-md text-white">
+                <span
+                  className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block"
+                  style={{ background: 'rgba(0,120,163,0.3)', backdropFilter: 'blur(8px)' }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Coming Soon</h2>
-              <p className="text-gray-600 mb-6">
-                Interview scheduling and tracking features are under development.
-              </p>
-              <div className="inline-flex items-center gap-2 text-sm text-teal-600">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span className="font-medium">Stay tuned for updates!</span>
+                  Module In Progress
+                </span>
+                <h3
+                  className="text-5xl font-extrabold mb-4 leading-tight"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  Master Your Interviews.
+                </h3>
+                <p
+                  className="text-lg leading-relaxed mb-8 opacity-90"
+                  style={{ color: '#aaedff' }}
+                >
+                  We are building an intelligent scheduling and live tracking suite to help you
+                  secure the offer.
+                </p>
+                <div className="flex gap-4">
+                  <button
+                    className="bg-white px-6 py-3 rounded-xl font-bold text-sm shadow-xl transition-all active:scale-95"
+                    style={{ color: '#006071' }}
+                  >
+                    Get Early Access
+                  </button>
+                </div>
               </div>
             </div>
+            {/* Decorative icon */}
+            <div
+              className="absolute right-16 top-1/2 -translate-y-1/2 select-none pointer-events-none hidden md:block"
+              style={{ color: 'rgba(255,255,255,0.08)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '200px' }}>
+                event_available
+              </span>
+            </div>
+          </div>
 
-            {/* Feature Preview */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+            {features.map((f) => (
+              <div
+                key={f.title}
+                className="p-8 rounded-2xl shadow-sm flex flex-col h-full transition-shadow hover:shadow-md"
+                style={{ background: '#ffffff' }}
+              >
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-transform hover:scale-110"
+                  style={{ background: f.iconBg, color: f.iconColor }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>
+                    {f.icon}
+                  </span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Schedule Tracking</h3>
-                <p className="text-sm text-gray-600">
-                  Keep track of all your interview schedules in one place
+                <h4
+                  className="text-xl font-bold mb-3"
+                  style={{ fontFamily: 'Manrope, sans-serif', color: '#191c1e' }}
+                >
+                  {f.title}
+                </h4>
+                <p
+                  className="text-sm leading-relaxed mb-6 flex-1"
+                  style={{ color: '#3e484b' }}
+                >
+                  {f.desc}
                 </p>
-              </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                  </svg>
+                <div className="mt-auto pt-4 flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: f.badgeColor }}>
+                    {f.badge}
+                  </span>
+                  <span className="w-8 h-px" style={{ background: '#bec8cc' }} />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Reminders</h3>
-                <p className="text-sm text-gray-600">Get notified before your interviews start</p>
               </div>
+            ))}
+          </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+          {/* Asymmetric Info Block */}
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
+            <div className="flex-1 space-y-6">
+              <h5
+                className="text-3xl font-bold"
+                style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
+              >
+                Why we are reinventing the interview tracker.
+              </h5>
+              <p className="leading-loose" style={{ color: '#3e484b' }}>
+                The Digital Architect approach treats the interview not just as a meeting, but as a
+                critical structural phase in your career construction. Most tools just give you a
+                date. We provide the blueprint for the entire conversation.
+              </p>
+              <div className="flex gap-12 mt-8">
+                <div>
+                  <p
+                    className="text-3xl font-extrabold"
+                    style={{ fontFamily: 'Manrope, sans-serif', color: '#006071' }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
+                    84%
+                  </p>
+                  <p className="text-xs font-medium uppercase tracking-widest" style={{ color: '#bec8cc' }}>
+                    Confidence Boost
+                  </p>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Prep Notes</h3>
-                <p className="text-sm text-gray-600">
-                  Add notes and preparation materials for each interview
-                </p>
+                <div>
+                  <p
+                    className="text-3xl font-extrabold"
+                    style={{ fontFamily: 'Manrope, sans-serif', color: '#005e80' }}
+                  >
+                    12h
+                  </p>
+                  <p className="text-xs font-medium uppercase tracking-widest" style={{ color: '#bec8cc' }}>
+                    Weekly Time Saved
+                  </p>
+                </div>
               </div>
-
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-orange-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            </div>
+            <div className="flex-1 w-full">
+              <div
+                className="aspect-square rounded-2xl relative overflow-hidden flex items-center justify-center p-12"
+                style={{ background: '#f2f4f6' }}
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(0,96,113,0.05) 0%, transparent 70%)',
+                  }}
+                />
+                <div className="relative z-10 text-center">
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: '120px', color: '#bec8cc' }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                    />
-                  </svg>
+                    event_available
+                  </span>
+                  <p className="mt-4 font-semibold" style={{ color: '#6e797c' }}>
+                    Interview module coming soon
+                  </p>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Analytics</h3>
-                <p className="text-sm text-gray-600">
-                  Track your interview performance and success rate
-                </p>
               </div>
             </div>
           </div>
         </div>
+
+        {/* FAB */}
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="fixed bottom-8 right-8 text-white h-14 px-6 rounded-full shadow-2xl flex items-center gap-2 transition-all hover:scale-105 active:scale-95 z-50"
+          style={{ background: 'linear-gradient(45deg, #006071, #007b8f)' }}
+        >
+          <span className="material-symbols-outlined">add</span>
+          <span className="font-bold text-sm tracking-wide">Schedule Session</span>
+        </button>
       </div>
+
+      <AddJobModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={async (data: JobInput) => {
+          try {
+            await api.createJob(data);
+            queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            setIsAddModalOpen(false);
+          } catch (error) {
+            console.error('Failed to create job:', error);
+          }
+        }}
+      />
     </div>
   );
 }
