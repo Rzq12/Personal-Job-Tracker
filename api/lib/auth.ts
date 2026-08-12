@@ -6,6 +6,17 @@ const ACCESS_TOKEN_SECRET =
 const REFRESH_TOKEN_SECRET =
   process.env.REFRESH_TOKEN_SECRET || 'your-super-secret-refresh-token-key-change-this';
 
+// Validate secrets are set in production
+const isProduction = process.env.VERCEL_ENV === 'production';
+if (isProduction) {
+  if (!process.env.ACCESS_TOKEN_SECRET || process.env.ACCESS_TOKEN_SECRET === 'your-super-secret-access-token-key-change-this') {
+    console.error('⚠️  ACCESS_TOKEN_SECRET not set in production!');
+  }
+  if (!process.env.REFRESH_TOKEN_SECRET || process.env.REFRESH_TOKEN_SECRET === 'your-super-secret-refresh-token-key-change-this') {
+    console.error('⚠️  REFRESH_TOKEN_SECRET not set in production!');
+  }
+}
+
 const ACCESS_TOKEN_EXPIRES = '15m'; // 15 minutes
 const REFRESH_TOKEN_EXPIRES = '7d'; // 7 days
 
@@ -37,7 +48,7 @@ export function generateRefreshToken(payload: TokenPayload): string {
  */
 export function verifyAccessToken(token: string): TokenPayload {
   try {
-    return jwt.verify(token, ACCESS_TOKEN_SECRET) as TokenPayload;
+    return jwt.verify(token, ACCESS_TOKEN_SECRET, { algorithms: ['HS256'] }) as TokenPayload;
   } catch (error) {
     throw new Error('Invalid or expired access token');
   }
@@ -48,7 +59,7 @@ export function verifyAccessToken(token: string): TokenPayload {
  */
 export function verifyRefreshToken(token: string): TokenPayload {
   try {
-    return jwt.verify(token, REFRESH_TOKEN_SECRET) as TokenPayload;
+    return jwt.verify(token, REFRESH_TOKEN_SECRET, { algorithms: ['HS256'] }) as TokenPayload;
   } catch (error) {
     throw new Error('Invalid or expired refresh token');
   }
