@@ -120,7 +120,7 @@ export default function Register() {
 
       {/* Right Form Side */}
       <section
-        className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16"
+        className="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-16"
         style={{ background: '#f7f9fb' }}
       >
         <div className="w-full max-w-md space-y-8 animate-fade-in">
