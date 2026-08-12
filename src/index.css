@@ -185,6 +185,56 @@ h1, h2, h3, h4, h5, h6,
   min-height: 100vh;
 }
 
+@media (max-width: 767px) {
+  .sidebar-layout {
+    margin-left: 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+/* Mobile-friendly table wrapper */
+@media (max-width: 640px) {
+  .responsive-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .responsive-table table {
+    min-width: 600px;
+  }
+
+  /* Smaller padding on mobile */
+  .content-padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Fix for iOS input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Touch-friendly minimum target size */
+@media (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 /* ============================================
    ANIMATIONS
    ============================================ */

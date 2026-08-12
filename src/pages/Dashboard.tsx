@@ -131,7 +131,7 @@ export default function Dashboard() {
       <div className="sidebar-layout pt-16 md:pt-0">
         <TopBar />
 
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
           {/* Welcome Header */}
           <section className="flex flex-col gap-1">
             <p className="text-sm font-medium" style={{ color: '#006071' }}>Overview Dashboard</p>
