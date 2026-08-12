@@ -27,30 +27,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const action = req.query.action as string;
 
-  // Rate limiting for sensitive auth actions
-  if (action === 'login' || action === 'register') {
-    const ip =
-      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-      req.socket?.remoteAddress ||
-      'unknown';
-
-    const maxRequests = action === 'login' ? 5 : 3; // 3 registration attempts
-    const allowed = checkRateLimit(ip, maxRequests, 60_000);
-    const info = getRateLimitInfo(ip, maxRequests);
-
-    res.setHeader('X-RateLimit-Limit', String(maxRequests));
-    res.setHeader('X-RateLimit-Remaining', String(info.remaining));
-    res.setHeader('X-RateLimit-Reset', String(info.reset));
-
-    if (!allowed) {
-      return res.status(429).json({
-        error: 'Too many requests',
-        message: `Maximum ${maxRequests} attempts per minute. Please try again later.`,
-      });
-    }
-  }
-
   try {
+    // Rate limiting for sensitive auth actions
+    if (action === 'login' || action === 'register') {
+      const ip =
+        (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+        req.socket?.remoteAddress ||
+        'unknown';
+
+      const maxRequests = action === 'login' ? 5 : 3;
+      const allowed = checkRateLimit(ip, maxRequests, 60_000);
+      const info = getRateLimitInfo(ip, maxRequests);
+
+      res.setHeader('X-RateLimit-Limit', String(maxRequests));
+      res.setHeader('X-RateLimit-Remaining', String(info.remaining));
+      res.setHeader('X-RateLimit-Reset', String(info.reset));
+
+      if (!allowed) {
+        return res.status(429).json({
+          error: 'Too many requests',
+          message: `Maximum ${maxRequests} attempts per minute. Please try again later.`,
+        });
+      }
+    }
+
     switch (action) {
       case 'register':
         return await handleRegister(req, res);
