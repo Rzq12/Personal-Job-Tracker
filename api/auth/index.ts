@@ -70,8 +70,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Invalid action' });
     }
   } catch (error: any) {
-    console.error('Auth error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Auth error:', error?.message || error, error?.stack?.split('\n').slice(0, 3).join('\n'));
+    const detail = process.env.VERCEL_ENV !== 'production' ? String(error?.message || error) : null;
+    return res.status(500).json({
+      error: 'Internal server error',
+      ...(detail ? { detail } : {}),
+    });
   }
 }
 
