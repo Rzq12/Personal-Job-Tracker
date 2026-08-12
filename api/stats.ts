@@ -25,7 +25,7 @@ const ALL_STATUSES = [
 ];
 
 async function handler(req: AuthRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://job-tracker.riezqidr.my.id');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 

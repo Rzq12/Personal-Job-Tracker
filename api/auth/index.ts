@@ -8,22 +8,47 @@ import {
   verifyRefreshToken,
   extractToken,
 } from '../lib/auth';
+import { checkRateLimit, getRateLimitInfo } from '../lib/rateLimit';
 
 /**
  * Unified Auth Handler - All auth endpoints in one function
  * Routes: /api/auth?action=register|login|me|refresh|logout
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS headers — must match vercel.json
+  res.setHeader('Access-Control-Allow-Origin', 'https://job-tracker.riezqidr.my.id');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
   const action = req.query.action as string;
+
+  // Rate limiting for sensitive auth actions
+  if (action === 'login' || action === 'register') {
+    const ip =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket?.remoteAddress ||
+      'unknown';
+
+    const maxRequests = action === 'login' ? 5 : 3; // 3 registration attempts
+    const allowed = checkRateLimit(ip, maxRequests, 60_000);
+    const info = getRateLimitInfo(ip, maxRequests);
+
+    res.setHeader('X-RateLimit-Limit', String(maxRequests));
+    res.setHeader('X-RateLimit-Remaining', String(info.remaining));
+    res.setHeader('X-RateLimit-Reset', String(info.reset));
+
+    if (!allowed) {
+      return res.status(429).json({
+        error: 'Too many requests',
+        message: `Maximum ${maxRequests} attempts per minute. Please try again later.`,
+      });
+    }
+  }
 
   try {
     switch (action) {
@@ -151,6 +176,8 @@ async function handleLogin(req: VercelRequest, res: VercelResponse) {
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
+    // Add small delay to prevent timing attacks
+    await new Promise((resolve) => setTimeout(resolve, 200 + Math.random() * 100));
     return res.status(401).json({
       error: 'Authentication failed',
       message: 'Invalid email or password',
